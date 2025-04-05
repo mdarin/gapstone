@@ -3,9 +3,12 @@ gapstone
 
 Gapstone is a Go binding for the Capstone disassembly library.
 
-Clone capstone
+clone gapstone 
+cd to/gapstone
+and clone capstone
 https://github.com/capstone-engine/capstone.git
 (from next branch by default)
+
 and run ruby scripts
 ```sh
 # perpare builder
@@ -15,7 +18,7 @@ docker build -t gapstone-builder .
 
 ./genconst path/to/clonned/capstone/bindings/python/capstone
 # or in docker
- $ docker run -t --rm -v $(pwd):/build  gapstone-builder ./genconst capstone/bindings/python/capstone/D
+ $ docker run -t --rm -v $(pwd):/build  gapstone-builder ./genconst capstone/bindings/python/capstone/
 
 ./genspec path/to/clonned/capstone/tests
 # or in docker
