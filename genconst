@@ -10,8 +10,8 @@ end
 
 prefix = <<END
 /*
-Gapstone is a Go binding for the Capstone disassembly library. For examples,
-try reading the *_test.go files.
+Gapstone is a Go binding for the Capstone disassembly library.
+For examples, try reading the *_test.go files.
 
 	Library Author: Nguyen Anh Quynh
 	Binding Author: Ben Nagy
@@ -20,7 +20,7 @@ try reading the *_test.go files.
 
     THIS FILE WAS AUTO-GENERATED -- DO NOT EDIT!
 	Command: #{$0} #{ARGV[0]}
-	#{DateTime.now}
+	Created at: #{DateTime.now}
 
 */
 
@@ -65,7 +65,7 @@ pyfiles.each {|pyfn|
 				const = l.split.first
 				gofh.puts "\t#{const} = C.#{const}"
 			else
-				fail "Weird line #{l}"
+				print "Weird line #{l}"
 			end
 		}
 
@@ -74,5 +74,5 @@ pyfiles.each {|pyfn|
 	}
 
 	# if all is well, this will nicely format all the files we just wrote. <3
-	`go fmt`
+	#`go fmt`
 }

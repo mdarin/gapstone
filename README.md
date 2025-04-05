@@ -3,6 +3,17 @@ gapstone
 
 Gapstone is a Go binding for the Capstone disassembly library.
 
+Clone capstone
+https://github.com/capstone-engine/capstone.git
+(from next branch by default)
+and run ruby scripts
+```sh
+./genconst path/to/clonned/capstone/bindings/python/capstone
+./genspec path/to/clonned/capstone/tests
+```
+You should see generated .go source files.
+Use it for binding in your project.
+
 ## CURRENT UPSTREAM VERSION: 4.0.2
 [![Build Status](https://travis-ci.org/knightsc/gapstone.svg?branch=master)](https://travis-ci.org/knightsc/gapstone)
 
