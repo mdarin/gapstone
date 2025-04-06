@@ -15,7 +15,7 @@ docker build -t gapstone-builder .
 
 ./genconst path/to/clonned/capstone/bindings/python/capstone
 # or in docker
- $ docker run -t --rm -v $(pwd):/build  gapstone-builder ./genconst capstone/bindings/python/capstone/D
+docker run -t --rm -v $(pwd):/build  gapstone-builder ./genconst capstone/bindings/python/capstone/
 
 ./genspec path/to/clonned/capstone/tests
 # or in docker
