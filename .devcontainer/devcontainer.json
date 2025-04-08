@@ -16,6 +16,17 @@
 		"ghcr.io/devcontainers/features/go:1": {
 			"version": "latest"
 		}
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"tooltitudeteam.tooltitude",
+				"whosydd.go-tags",
+				"quillaja.goasm",
+				"trixnz.go-to-method",
+				"vivaxy.vscode-conventional-commits"
+			]
+		}
 	}
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
