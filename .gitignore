@@ -10,3 +10,11 @@
 # Local development
 env/
 venv/
+
+# stuff
+capstone
+gapstone
+*.tar.gz
+*.gz.asc
+*.SPEC
+*.pub
