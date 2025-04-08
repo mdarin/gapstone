@@ -1,0 +1,12 @@
+# Aider files
+.aider*
+.idea/
+
+# Common temporary and backup files
+*.swp
+*.swo
+.DS_Store
+
+# Local development
+env/
+venv/
