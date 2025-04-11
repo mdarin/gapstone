@@ -317,26 +317,15 @@ class CodeParser
     value.strip
   end
 
-#   AI: исправь ошибку в этой функции
-#   File: capstone/tests/test_wasm.c
-#   ERROR: Unexpected ArgumentError at position 205: wrong number of arguments (given 0, expected 1)
-# Context: 
-# At line 12, column 1:
-# struct platform {
-# ^
-# ./ppars.rb:320:in 'parse_define'
-# ./ppars.rb:239:in 'CodeParser#parse_relevant_line'
-# ./ppars.rb:210:in 'CodeParser#parse_file_content'
-# ./ppars.rb:22:in 'block in CodeParser#parse' AI?
-def parse_define(scanner)                                                                                                                                                                       
-  return false unless @current_conditional                                                                                                                                                      
-                                                                                                                                                                                                
-  start_pos = scanner.pos                                                                                                                                                                       
-  return false unless scanner.scan(/#define\s+(\w+)\s+/)                                                                                                                                        
-                                                                                                                                                                                                
-  name = scanner[1]                                                                                                                                                                             
-  value = +""                                                                                                                                                                                   
-  open_quote = false                                                                                                                                                                            
+def parse_define(scanner)
+  return false unless @current_conditional
+
+  start_pos = scanner.pos
+  return false unless scanner.scan(/#define\s+(\w+)\s+/)
+
+  name = $1
+  value = +""
+  open_quote = false
                                                                                                                                                                                                 
   begin                                                                                                                                                                                         
     if scanner.scan(/"/)                                                                                                                                                                        
@@ -379,22 +368,10 @@ def parse_define(scanner)
   end                                                                                                                                                                                           
 end  
 
-# AI: исправь ошибку в этой функции
-# File: capstone/tests/test_riscv.c
-#   ERROR: Unexpected ArgumentError at position 103: wrong number of arguments (given 0, expected 1)
-# Context: 
-# At line 7, column 1:
-# struct platform {
-# ^
-# ./ppars.rb:384:in 'parse_platform_struct'
-# ./ppars.rb:239:in 'CodeParser#parse_relevant_line'
-# ./ppars.rb:210:in 'CodeParser#parse_file_content'
-# ./ppars.rb:22:in 'block in CodeParser#parse' AI!
-  
 
   def parse_platform_struct(scanner)
     return false unless @current_conditional
-    
+
     start_pos = scanner.pos
     return false unless scanner.scan(/struct\s+platform\s+platforms\s*\[\s*\]\s*=\s*\{\s*/)
 
