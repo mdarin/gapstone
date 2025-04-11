@@ -389,7 +389,7 @@ end
 # ./ppars.rb:384:in 'parse_platform_struct'
 # ./ppars.rb:239:in 'CodeParser#parse_relevant_line'
 # ./ppars.rb:210:in 'CodeParser#parse_file_content'
-# ./ppars.rb:22:in 'block in CodeParser#parse' AI? 
+# ./ppars.rb:22:in 'block in CodeParser#parse' AI!
   
 
   def parse_platform_struct(scanner)
@@ -423,7 +423,7 @@ end
 
       platforms_count.positive?
     rescue => e
-      scanner.pos = start_pos if scanner && start_pos
+      scanner&.pos = start_pos if scanner && start_pos
       raise ParseError, "Error parsing platform struct: #{e.message}"
     end
   end
