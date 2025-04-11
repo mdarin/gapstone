@@ -7,7 +7,6 @@
 # Для всей директории (рекурсивно)
 # ruby parser.rb /path/to/code/
 
-#AI: почему зависает скрипт, где может быть ошибка? AI!
 
 require 'strscan'
 require 'pathname'
@@ -28,22 +27,31 @@ class CodeParser
     content = File.read(@file_path)
     scanner = StringScanner.new(content)
 
-    until scanner.eos?
-      if scanner.scan(/\s+/)
-        next
-      elsif parse_conditional(scanner)
-        next
-      elsif @skip_mode
-        skip_irrelevant_code(scanner)
-        next
-      elsif parse_define(scanner)
-        next
-      elsif parse_platform_struct(scanner)
-        next
-      else
-        # Если не распознано как значимая конструкция, пропускаем
-        skip_irrelevant_code(scanner)
+    # Add timeout for long-running parsing operations
+    begin
+      Timeout.timeout(1) do
+        until scanner.eos?
+          if scanner.scan(/\s+/)
+            next
+          elsif parse_conditional(scanner)
+            next
+          elsif @skip_mode
+            skip_irrelevant_code(scanner)
+            next
+          elsif parse_define(scanner)
+            next
+          elsif parse_platform_struct(scanner)
+            next
+          else
+            # Если не распознано как значимая конструкция, пропускаем
+            skip_irrelevant_code(scanner)
+          end
+        end
       end
+    rescue Timeout::Error
+      raise ParseError, "Parsing timed out (took more than 1 second)"
+    rescue => e
+      raise ParseError, "Parsing error: #{e.message}"
     end
 
     { defines: @defines, platforms: @platforms }
@@ -57,7 +65,14 @@ class CodeParser
 
   def skip_irrelevant_code(scanner)
     # Пропускаем до следующей значимой конструкции
-    scanner.scan_until(/(?=#define|struct\s+platform|#if|#endif|\z)/)
+    if scanner.scan_until(/(?=#define|struct\s+platform|#if|#endif|\z)/)
+      return true
+    else
+      # If we can't find the end, break out and raise error
+      remaining = scanner.rest
+      raise ParseError, "Stuck in skip_irrelevant_code with: #{remaining[0..50]}..." if remaining.size > 1024
+      return false
+    end
   end
 
   # ... (остальные методы остаются без изменений)
@@ -136,18 +151,29 @@ class CodeParser
       until scanner.scan(/\s*\};/)
         next if scanner.scan(/\s*\/\/.*?\n|\s*\/\*.*?\*\/|\s+/)
 
-        if scanner.scan(/\{/)
+        # Check if we've found the start of a new platform entry
+        if scanner.peek(1) == '{'
           platform = parse_platform_entry(scanner)
           @platforms << platform if platform
           scanner.scan(/\s*,\s*/)
         else
-          raise ParseError, "Expected platform entry"
+          # If we're stuck, break and raise error with context
+          current_pos = scanner.rest[0..50]
+          raise ParseError, "Unexpected token in platform struct: #{current_pos}"
+        end
+
+        # Prevent infinite loops by checking if we've made progress
+        unless scanner.pos > last_pos
+          raise ParseError, "Parser stuck at same position"
         end
       end
 
       true
     rescue => e
       raise ParseError, "Error parsing platform struct: #{e.message}"
+    ensure
+      # Reset state after parsing
+      @current_conditional = true
     end
   end
 
