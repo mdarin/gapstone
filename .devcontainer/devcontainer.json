@@ -6,17 +6,11 @@
 	"image": "mcr.microsoft.com/devcontainers/go:1-1.23-bookworm",
 	"features": {
 		"ghcr.io/jungaretti/features/make:1": {},
-		"ghcr.io/devcontainers/features/docker-in-docker:2": {
-			"moby": true,
-			"azureDnsAutoDetection": true,
-			"installDockerBuildx": true,
-			"installDockerComposeSwitch": true,
-			"version": "latest"
-		},
-		"ghcr.io/devcontainers/features/go:1": {
-			"version": "latest"
-		}
+		"ghcr.io/devcontainers/features/docker-in-docker:2": {},
+		"ghcr.io/devcontainers/features/git:1": {},
+		"ghcr.io/devcontainers/features/git-lfs:1": {}
 	},
+	
 	"customizations": {
 		"vscode": {
 			"extensions": [
@@ -24,7 +18,13 @@
 				"whosydd.go-tags",
 				"quillaja.goasm",
 				"trixnz.go-to-method",
-				"vivaxy.vscode-conventional-commits"
+				"vivaxy.vscode-conventional-commits",
+				"fabiospampinato.vscode-diff",
+				"foxundermoon.shell-format",
+				"eamodioutilgitlens",
+				"usernamehw.errorlens",
+				"IgorSbitnev.error-gutters",
+				"ms-vscode.cpptools-extension-pack"
 			]
 		}
 	}

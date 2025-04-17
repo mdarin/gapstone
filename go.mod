@@ -1,5 +1,7 @@
 module github.com/mdarin/gapstone
 
-go 1.23.0
+go 1.18
 
-toolchain go1.23.8
+require github.com/avito-tech/normalize v0.1.0
+
+require github.com/agnivade/levenshtein v1.1.0 // indirect

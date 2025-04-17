@@ -1,0 +1,15 @@
+Issues to be solved in next versions
+
+
+[Constants]
+- Parse constants at onece without post-processing
+
+[Resources]
+
+[Decomposers]
+
+[Tests]
+
+* Remake script to Python
+* Automate generation process
+

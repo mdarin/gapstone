@@ -13,8 +13,8 @@ venv/
 
 # stuff
 capstone
-gapstone
+gapstone 
 *.tar.gz
 *.gz.asc
-*.SPEC
+# *.SPEC
 *.pub

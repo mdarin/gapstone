@@ -3,23 +3,64 @@ gapstone
 
 Gapstone is a Go binding for the Capstone disassembly library.
 
-Clone capstone
+Clone capstone or run install_capstone.sh script
 https://github.com/capstone-engine/capstone.git
 (from next branch by default)
-and run ruby scripts
+and run scripts step-by-step
 ```sh
-# perpare builder
+cd path/to/capstone
+make 
+sudo make install
+make clean
+cd back/to/gapstone
+
+install ruby
+# or  perpare builder image
 docker build -t gapstone-builder .
 
 ## generate
 
+export RUN="docker run -t --rm -v $(pwd):/build -w /build gapstone-builder"
+
 ./genconst path/to/clonned/capstone/bindings/python/capstone
-# or in docker
-docker run -t --rm -v $(pwd):/build  gapstone-builder ./genconst capstone/bindings/python/capstone/
+# or in docker builder
+docker run -t --rm -v $(pwd):/build -w /build gapstone-builder ./genconst.rb capstone/bindings/python/capstone/
 
 ./genspec path/to/clonned/capstone/tests
-# or in docker
-docker run -t --rm -v $(pwd):/build  gapstone-builder ./genspec capstone/tests/
+# or in docker builder
+docker run -t --rm -v $(pwd):/build -w /build  gapstone-builder ./genspec.rb capstone/tests/
+
+eport EXCLUDEDIR="gapstone"
+EXCLUDEDIR="gapstone" go test -skip-dirs="$GAPSTONE" ./...
+
+# number of times
+# try to run go test ./...
+# If you see someting like this on run the command go test ./...
+# ./riscv_constants.go:471:22: could not determine kind of name for C.RISCV_GRP_ISRV32C
+# ./riscv_constants.go:472:23: could not determine kind of name for C.RISCV_GRP_ISRV32CF
+# ./riscv_constants.go:474:22: could not determine kind of name for C.RISCV_GRP_ISRV64A
+# ./riscv_constants.go:475:22: could not determine kind of name for C.RISCV_GRP_ISRV64C
+# ./riscv_constants.go:476:22: could not determine kind of name for C.RISCV_GRP_ISRV64D
+# try to fix it by this script
+ ./gencomment_lines.sh 
+
+./genresources.sh 
+
+# fix junk after generation
+# and try to run tests
+# repeat until done :)
+
+ go test ./...
+ # all tests ok 
+
+
+
+# Для одного файла
+ruby parser.rb test.c
+
+# Для всей директории (рекурсивно)
+ruby parser.rb /path/to/code/
+DEBUG=1 ruby parser.rb path/to/file.c
 ```
 
 You should see generated .go source files.
