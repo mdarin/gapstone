@@ -1,6 +1,8 @@
 gapstone
 ====
 
+![logo](assets/logo.png)
+
 Gapstone is a Go binding for the Capstone disassembly library.
 
 Clone capstone or run install_capstone.sh script
