@@ -52,7 +52,7 @@ func TestMips(t *testing.T) {
 	final := new(bytes.Buffer)
 	spec_file := MipsSpec
 
-	for i, platform := range mips_tests {
+	for i, platform := range mipsPlatforms {
 
 		engine, err := New(platform.arch, platform.mode)
 		if err != nil {

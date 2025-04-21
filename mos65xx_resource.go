@@ -92,3 +92,7 @@ var mos65xxPlatforms = []platform{
 		},
 	},
 }
+
+// TODO:
+// 1 mos65xx_decomposer.go по аналогии arm64_decomposer.go
+// 2 mos65xx_decomposer_test.go по аналогии arm64_decomposer_test.go

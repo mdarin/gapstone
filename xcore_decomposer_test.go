@@ -60,7 +60,7 @@ func TestXcore(t *testing.T) {
 	final := new(bytes.Buffer)
 	spec_file := XcoreSpec
 
-	for i, platform := range xcoreTests {
+	for i, platform := range xcorePlatforms {
 
 		engine, err := New(platform.arch, platform.mode)
 		if err != nil {

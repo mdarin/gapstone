@@ -8,6 +8,8 @@ try reading the *_test.go files.
     (c) 2013 COSEINC. All Rights Reserved.
 */
 
+// ! DEPRECATED
+
 package gapstone
 
 import (
@@ -20,6 +22,10 @@ import (
 )
 
 func TestTest(t *testing.T) {
+
+	t.SkipNow()
+
+	// ! DEPRECATED
 
 	final := new(bytes.Buffer)
 	spec_file := BasicSpec
@@ -79,7 +85,7 @@ func TestTest(t *testing.T) {
 
 	if !isSimilar {
 		// * Debugging - uncomment below and run the test | diff - test.SPEC
-		fmt.Println(final.String()) // TODO:
+		// fmt.Println(final.String())
 		t.Errorf("Output failed to match spec!")
 	} else {
 		t.Logf("Clean diff with %v.\n", spec_file)

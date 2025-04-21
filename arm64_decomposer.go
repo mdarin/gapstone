@@ -39,19 +39,19 @@ type Arm64Shifter struct {
 type Arm64Operand struct {
 	VectorIndex int
 	Vas         int
-	Vess        int
-	Shift       Arm64Shifter
-	Ext         uint
-	Type        uint // ARM64_OP_* - determines which field is set below
-	Reg         uint
-	Imm         int64
-	FP          float64
-	Mem         Arm64MemoryOperand
-	PState      int
-	Sys         uint
-	Prefetch    int
-	Barrier     int
-	Access      uint
+	//Vess        int
+	Shift    Arm64Shifter
+	Ext      uint
+	Type     uint // ARM64_OP_* - determines which field is set below
+	Reg      uint
+	Imm      int64
+	FP       float64
+	Mem      Arm64MemoryOperand
+	PState   int
+	Sys      uint
+	Prefetch int
+	Barrier  int
+	Access   uint
 }
 
 type Arm64MemoryOperand struct {

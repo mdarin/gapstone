@@ -344,7 +344,7 @@ func TestX86(t *testing.T) {
 	final := new(bytes.Buffer)
 	spec_file := X86Spec
 
-	for i, platform := range x86Tests {
+	for i, platform := range x86Platforms {
 
 		engine, err := New(platform.arch, platform.mode)
 		if err != nil {

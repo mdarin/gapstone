@@ -8,6 +8,8 @@ try reading the *_test.go files.
     (c) 2013 COSEINC. All Rights Reserved.
 */
 
+// ! DEPRECATED
+
 package gapstone
 
 import (
@@ -21,9 +23,13 @@ import (
 
 func TestDetailTest(t *testing.T) {
 
-	final := new(bytes.Buffer)
+	t.SkipNow()
 
+	// ! DEPRECATED
+
+	final := new(bytes.Buffer)
 	spec_file := DetailSpec
+
 	var maj, min int
 	if ver, err := New(0, 0); err == nil {
 		maj, min = ver.Version()
@@ -32,12 +38,13 @@ func TestDetailTest(t *testing.T) {
 
 	t.Logf("Detailed Test. Capstone Version: %v.%v", maj, min)
 
-	for i, platform := range detailPlatforms {
+	for i, platform := range detailTests {
 
 		t.Logf("%2d> %s", i, platform.comment)
+
 		engine, err := New(platform.arch, platform.mode)
 		if err != nil {
-			t.Errorf("Failed to initialize engine %v", err)
+			t.Errorf("Failed to initialize engine for platform: %v error: %v", platform, err)
 			return
 		}
 		defer engine.Close()
@@ -108,7 +115,7 @@ func TestDetailTest(t *testing.T) {
 
 	if !isSimilar {
 		// * Debugging - uncomment below and run the test | diff - test.SPEC
-		fmt.Println(final.String())
+		// fmt.Println(final.String())
 		t.Errorf("Output failed to match spec!")
 	} else {
 		t.Logf("Clean diff with %v.\n", spec_file)

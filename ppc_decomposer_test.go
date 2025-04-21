@@ -96,7 +96,7 @@ func TestPPC(t *testing.T) {
 	final := new(bytes.Buffer)
 	spec_file := PpcSpec
 
-	for i, platform := range ppcTests {
+	for i, platform := range ppcPlatforms {
 
 		engine, err := New(platform.arch, platform.mode)
 		if err != nil {

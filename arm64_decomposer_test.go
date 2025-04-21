@@ -124,7 +124,7 @@ func TestArm64(t *testing.T) {
 	final := new(bytes.Buffer)
 	spec_file := Arm64Spec
 
-	for i, platform := range arm64Tests {
+	for i, platform := range arm64Platforms {
 
 		engine, err := New(platform.arch, platform.mode)
 		if err != nil {
