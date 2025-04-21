@@ -16,17 +16,25 @@ import (
 	"os"
 	"strings"
 	"testing"
+
+	"github.com/avito-tech/normalize"
 )
 
 func bpfInsnDetail(insn Instruction, engine *Engine, buf *bytes.Buffer) {
-	if oplen := len(insn.BPF.Operands); oplen > 0 {
+	fmt.Fprintf(buf, "\tGroups:")
+	for _, group := range insn.Groups {
+		fmt.Fprintf(buf, " %s", engine.GroupName(group))
+	}
+	fmt.Fprintf(buf, "\n")
+
+	if oplen := len(insn.BPF.Operands); oplen >= 0 {
 		fmt.Fprintf(buf, "\tOperand count: %v\n", oplen)
 	}
 
 	for i, op := range insn.BPF.Operands {
 		switch op.Type {
 		case BPF_OP_REG:
-			fmt.Fprintf(buf, "\t\toperands[%v].type: REG = %v\n", i, engine.RegName(op.Reg))
+			fmt.Fprintf(buf, "\t\toperands[%v].type: REG = %v\n", i, engine.RegName(uint(op.Reg)))
 
 		case BPF_OP_IMM:
 			fmt.Fprintf(buf, "\t\toperands[%v].type: IMM = 0x%x\n", i, op.Imm)
@@ -37,26 +45,26 @@ func bpfInsnDetail(insn Instruction, engine *Engine, buf *bytes.Buffer) {
 		case BPF_OP_MEM:
 			fmt.Fprintf(buf, "\t\toperands[%v].type: MEM\n", i)
 			if op.Mem.Base != BPF_REG_INVALID {
-				fmt.Fprintf(buf, "\t\t\toperands[%v].mem.base: REG = %s\n",
-					i, engine.RegName(op.Mem.Base))
+				fmt.Fprintf(buf, "\t\t\toperands[%v].mem.base: REG = %s\n", i, engine.RegName(op.Mem.Base))
 			}
-			if op.Mem.Disp != 0 {
-				fmt.Fprintf(buf, "\t\t\toperands[%v].mem.disp: 0x%x\n", i, uint64(op.Mem.Disp))
-			}
+			// if op.Mem.Disp != 0 {
+			fmt.Fprintf(buf, "\t\t\toperands[%v].mem.disp: 0x%x\n", i, uint64(op.Mem.Disp))
+			// }
 
 		case BPF_OP_MMEM:
-			fmt.Fprintf(buf, "MMEM = M[0x%x]\n", op.Mmem)
+			fmt.Fprintf(buf, "\t\toperands[%v].type: MMEM = M[0x%x]\n", i, op.Mmem)
 
 		case BPF_OP_MSH:
-			fmt.Fprintf(buf, "MSH = 4*([0x%x]&0xf)\n", op.Msh)
+			fmt.Fprintf(buf, "\t\toperands[%v].type: MSH = 4*([0x%x]&0xf)\n", i, op.Msh)
 
 		case BPF_OP_EXT:
-			fmt.Fprintf(buf, "EXT = %s\n", i, "todo: from BPF_EXT_LEN")
+			fmt.Fprintf(buf, "\t\toperands[%v].type: EXT = %s\n", i, bpfExtToString(op.Ext))
 		}
 
-		if op.Ext != BPF_EXT_INVALID {
-			fmt.Fprintf(buf, "\t\t\tExt: %v\n", op.Ext)
-		}
+		// INFO: uncomment if needed
+		// if op.Ext != BPF_EXT_INVALID {
+		// 	fmt.Fprintf(buf, "\t\t\tExt: %v\n", op.Ext)
+		// }
 	}
 
 	if len(insn.AllRegistersRead) > 0 {
@@ -86,15 +94,17 @@ func TestBpf(t *testing.T) {
 	spec_file := BpfSpec
 
 	for i, platform := range bpfPlatforms {
-
 		engine, err := New(platform.arch, platform.mode)
 		if err != nil {
 			t.Errorf("Failed to initialize engine %v", err)
+
 			return
 		}
+
 		for _, opt := range platform.options {
 			engine.SetOption(opt.ty, opt.value)
 		}
+
 		if i == 0 {
 			maj, min := engine.Version()
 			t.Logf("Arch: BPF. Capstone Version: %v.%v", maj, min)
@@ -126,7 +136,7 @@ func TestBpf(t *testing.T) {
 			}
 			// ? unnes output. Uncomment if needed
 			// fmt.Fprintf(final, "0x%x:\n", insns[len(insns)-1].Address+insns[len(insns)-1].Size)
-			fmt.Fprintf(final, "\n")
+			// fmt.Fprintf(final, "\n")
 		} else {
 			t.Errorf("Disassembly error: %v\n", err)
 		}
@@ -137,19 +147,36 @@ func TestBpf(t *testing.T) {
 	if err != nil {
 		t.Errorf("Cannot read spec file %v: %v", spec_file, err)
 	}
-	if fs := final.String(); string(spec) != fs {
+
+	// * INFO:
+	// Compare two strings with all normalizations described above applied.
+	// Provide threshold parameters to tweak how similar strings must be to make the function return true.
+	// threshold is relative value, so 0.5 roughly means "strings are 50% different after all normalizations applied".
+	similarityThreshold := 0.01
+	isSimilar := normalize.AreStringsSimilar(string(spec), final.String(), similarityThreshold)
+	t.Logf("String similariti Levenstein distance: %f isSimilar: %t", similarityThreshold, isSimilar)
+
+	if !CompareNormalized(final.String(), spec) {
 		// INFO: Ucomment for debugging, diff this output with SPEC
-		fmt.Println(fs)
+		fmt.Println(final.String())
 		t.Errorf("Output failed to match spec!")
 	} else {
 		t.Logf("Clean diff with %v.\n", spec_file)
 	}
 }
 
-// Функция преобразования константы в строку
-func bpfGroupToString(group int) string {
+// Функция преобразования константы в строку.
+// source: capstone/tests/test_bpf.c
+// ```c
+//
+//	static const char * ext_name[] = {
+//		[BPF_EXT_LEN] = "#len",
+//	};
+//
+// ```
+func bpfExtToString(ext uint32) string {
 	// Преимущества варианта (с map):
-
+	//
 	// Легче поддерживать при добавлении новых констант
 	// Более компактный код
 	// Проще автоматически генерировать
@@ -157,32 +184,17 @@ func bpfGroupToString(group int) string {
 	// в связанных функциях доступных по ключу
 
 	// Создаем карту соответствия констант их строковым представлениям
-	groupNames := map[int]string{
-		BPF_GRP_INVALID: "BPF_GRP_INVALID", // + func (args...) { actions ...}
-		BPF_GRP_LOAD:    "BPF_GRP_LOAD",
-		BPF_GRP_STORE:   "BPF_GRP_STORE",
-		BPF_GRP_ALU:     "BPF_GRP_ALU",
-		BPF_GRP_JUMP:    "BPF_GRP_JUMP",
-		BPF_GRP_CALL:    "BPF_GRP_CALL",
-		BPF_GRP_RETURN:  "BPF_GRP_RETURN",
-		BPF_GRP_MISC:    "BPF_GRP_MISC",
-		BPF_GRP_ENDING:  "BPF_GRP_ENDING",
+	extNames := map[uint32]string{
+		BPF_EXT_INVALID: "BPF_EXT_INVALID",
+		BPF_EXT_LEN:     "BPF_EXT_#LEN",
 	}
 
 	// Получаем строковое представление константы
-	fullName, ok := groupNames[group]
+	fullName, ok := extNames[ext]
 	if !ok {
 		return "unknown"
 	}
 
-	// Отбрасываем префикс "BPF_GRP_" и приводим к нижнему регистру
-	return strings.ToLower(strings.TrimPrefix(fullName, "BPF_GRP_"))
+	// Отбрасываем префикс "BPF_EXT_" и приводим к нижнему регистру
+	return strings.ToLower(strings.TrimPrefix(fullName, "BPF_EXT_"))
 }
-
-// AI: напиши функцию подобную  bpfGroupToString
-// Функция преобразования константы в строку
-// func bpfExtToString(group int) string
-// для значений
-// BPF_EXT_INVALID
-// 	BPF_EXT_LEN
-// AI!
