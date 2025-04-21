@@ -19,37 +19,8 @@ package gapstone
 import "C"
 
 import (
-	"fmt"
 	"reflect"
 	"unsafe"
-)
-
-type Errno int
-
-func (e Errno) Error() string {
-	s := C.GoString(C.cs_strerror(C.cs_err(e)))
-	if s == "" {
-		return fmt.Sprintf("Internal Error: No Error string for Errno %d", int(e))
-	}
-	return s
-}
-
-var (
-	ErrOK       = Errno(0)  // No error: everything was fine
-	ErrMem      = Errno(1)  // Out-Of-Memory error: cs_open(), cs_disasm()
-	ErrArch     = Errno(2)  // Unsupported architecture: cs_open()
-	ErrHandle   = Errno(3)  // Invalid handle: cs_op_count(), cs_op_index()
-	ErrCsh      = Errno(4)  // Invalid csh argument: cs_close(), cs_errno(), cs_option()
-	ErrMode     = Errno(5)  // Invalid/unsupported mode: cs_open()
-	ErrOption   = Errno(6)  // Invalid/unsupported option: cs_option()
-	ErrDetail   = Errno(7)  // Information is unavailable because detail option is OFF
-	ErrMemSetup = Errno(8)  // Dynamic memory management uninitialized (see CS_OPT_MEM)
-	ErrVersion  = Errno(9)  // Unsupported version (bindings)
-	ErrDiet     = Errno(10) // Access irrelevant data in "diet" engine
-	ErrSkipdata = Errno(11) // Access irrelevant data for "data" instruction in SKIPDATA mode
-	ErrX86ATT   = Errno(12) // X86 AT&T syntax is unsupported (opt-out at compile time)
-	ErrX86Intel = Errno(13) // X86 Intel syntax is unsupported (opt-out at compile time)
-
 )
 
 // Since this is a build-time option for the C lib, it seems logical to have
@@ -93,6 +64,7 @@ type InstructionHeader struct {
 	Groups              []uint // List of *_GRP_* groups this instruction belongs to.
 }
 
+// * INFO
 // arch specific information will be filled in for exactly one of the
 // substructures. Eg, an Engine created with New(CS_ARCH_ARM, CS_MODE_ARM) will
 // fill in only the Arm structure member.
@@ -106,6 +78,8 @@ type Instruction struct {
 	Sparc *SparcInstruction
 	SysZ  *SysZInstruction
 	Xcore *XcoreInstruction
+	BPF   *BpfInstruction
+	// TODO: Add new arch here
 }
 
 // Called by the arch specific decomposers
@@ -272,20 +246,42 @@ func (e *Engine) Disasm(input []byte, address, count uint64) ([]Instruction, err
 		switch e.arch {
 		case CS_ARCH_ARM:
 			return decomposeArm(e, insns), nil
+
 		case CS_ARCH_ARM64:
 			return decomposeArm64(e, insns), nil
+
 		case CS_ARCH_MIPS:
 			return decomposeMips(e, insns), nil
+
 		case CS_ARCH_X86:
 			return decomposeX86(e, insns), nil
+
 		case CS_ARCH_PPC:
 			return decomposePPC(e, insns), nil
+
 		case CS_ARCH_SYSZ:
 			return decomposeSysZ(e, insns), nil
+
 		case CS_ARCH_SPARC:
 			return decomposeSparc(e, insns), nil
+
 		case CS_ARCH_XCORE:
 			return decomposeXcore(e, insns), nil
+
+			// CS_ARCH_M68K
+			// CS_ARCH_TMS320C64X
+			// CS_ARCH_M680X
+			// CS_ARCH_EVM
+			// CS_ARCH_MOS65XX
+			// CS_ARCH_WASM
+
+		case CS_ARCH_BPF:
+			return decomposeBpf(e, insns), nil
+
+			// CS_ARCH_RISCV
+			// CS_ARCH_MAX
+			// CS_ARCH_ALL
+
 		default:
 			return decomposeGeneric(e, insns), nil
 		}
