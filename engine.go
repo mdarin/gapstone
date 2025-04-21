@@ -8,6 +8,37 @@ try reading the *_test.go files.
     (c) 2013 COSEINC. All Rights Reserved.
 */
 
+/*
+Package capstone provides a Go binding for the Capstone disassembly framework.
+
+Capstone is a high-performance disassembly engine supporting multiple architectures
+and providing detailed instruction information including operands, registers,
+and semantic groups.
+
+Features:
+- Architecture-independent API
+- Detailed instruction decomposition
+- Support for x86, ARM, ARM64, MIPS, and other architectures
+- Thread-safe design
+- Customizable output formatting
+
+Example usage:
+    engine, err := capstone.New(capstone.CS_ARCH_X86, capstone.CS_MODE_64)
+    if err != nil {
+        panic(err)
+    }
+    defer engine.Close()
+
+    codeBytes := []byte{0x55, 0x48, 0x8b, 0x05, 0xab, 0xcd, 0xef, 0x12}
+    instructions, err := engine.Disasm(codeBytes, 0x4000, 0)
+    if err != nil {
+        panic(err)
+    }
+
+    for _, insn := range instructions {
+        fmt.Printf("0x%x:\t%s\t%s\n", insn.Address, insn.Mnemonic, insn.OpStr)
+    }
+*/
 package gapstone
 
 // #cgo LDFLAGS: -lcapstone
@@ -35,25 +66,36 @@ var dietMode = bool(C.cs_support(CS_SUPPORT_DIET))
 // The arch and mode given at create time will determine how code is
 // disassembled. After use you must close an Engine with engine.Close() to allow
 // the C lib to free resources.
+/* Engine represents a Capstone disassembler instance configured for a specific architecture and mode */
 type Engine struct {
-	handle   C.csh
-	arch     int
-	mode     int
-	skipdata *C.cs_opt_skipdata
+	handle C.csh // Handle to the underlying Capstone engine
+	
+	arch int // Architecture identifier (CS_ARCH_*)
+	
+	mode int // Mode identifier (CS_MODE_*)
+	
+	skipdata *C.cs_opt_skipdata // Skip data configuration pointer
+}
 }
 
 // Information that exists for every Instruction, regardless of arch.
 // Structure members here will be promoted, so every Instruction will have
 // them available. Check the constants for each architecture for available
 // Instruction groups etc.
+/* InstructionHeader contains basic information common to all instructions */
 type InstructionHeader struct {
-	Id      uint   // Internal id for this instruction. Subject to change.
-	Address uint   // Nominal address ($ip) of this instruction
-	Size    uint   // Size of the instruction, in bytes
-	Bytes   []byte // Raw Instruction bytes
-	// Not available in diet mode ( capstone built with CAPSTONE_DIET=yes )
-	Mnemonic string // Ascii text of instruction mnemonic
-	OpStr    string // Ascii text of instruction operands - Syntax depends on CS_OPT_SYNTAX
+	Id uint `json:"id"` // Internal id for this instruction. Subject to change.
+	
+	Address uint `json:"address"` // Nominal address ($ip) of this instruction
+	
+	Size uint `json:"size"` // Size of the instruction in bytes
+	
+	Bytes []byte `json:"bytes"` // Raw instruction bytes as they appear in memory
+	
+	Mnemonic string `json:"mnemonic"` // Instruction mnemonic (e.g., "add", "mov")
+	
+	OpStr string `json:"op_str"` // Formatted operand string for the instruction
+}
 	// Not available without the decomposer. BE CAREFUL! By default,
 	// CS_OPT_DETAIL is set to CS_OPT_OFF so the result of accessing these
 	// members is undefined.
@@ -172,22 +214,28 @@ func (e *Engine) Errno() error { return Errno(C.cs_errno(e.handle)) }
 // insn.X86.SibBase etc
 //
 // WARNING: Always returns "" if capstone built with CAPSTONE_DIET
+// RegName converts a register number to its mnemonic name
+// Example: For x86, RegName(0) returns "al", RegName(1) returns "cl"
 func (e *Engine) RegName(reg uint) string {
 	if dietMode {
 		return ""
 	}
 	return C.GoString(C.cs_reg_name(e.handle, C.uint(reg)))
 }
+}
 
 // The arch is implicit in the Engine. Accepts a constant like
 // ARM_INSN_ADD, or insn.Id
 //
 // WARNING: Always returns "" if capstone built with CAPSTONE_DIET
+// InsnName converts an instruction id to its mnemonic name
+// Example: For x86, InsnName(1) returns "add"
 func (e *Engine) InsnName(insn uint) string {
 	if dietMode {
 		return ""
 	}
 	return C.GoString(C.cs_insn_name(e.handle, C.uint(insn)))
+}
 }
 
 // The arch is implicit in the Engine. Accepts a constant like
