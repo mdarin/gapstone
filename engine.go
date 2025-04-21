@@ -23,21 +23,22 @@ Features:
 - Customizable output formatting
 
 Example usage:
-    engine, err := capstone.New(capstone.CS_ARCH_X86, capstone.CS_MODE_64)
-    if err != nil {
-        panic(err)
-    }
-    defer engine.Close()
 
-    codeBytes := []byte{0x55, 0x48, 0x8b, 0x05, 0xab, 0xcd, 0xef, 0x12}
-    instructions, err := engine.Disasm(codeBytes, 0x4000, 0)
-    if err != nil {
-        panic(err)
-    }
+	engine, err := capstone.New(capstone.CS_ARCH_X86, capstone.CS_MODE_64)
+	if err != nil {
+	    panic(err)
+	}
+	defer engine.Close()
 
-    for _, insn := range instructions {
-        fmt.Printf("0x%x:\t%s\t%s\n", insn.Address, insn.Mnemonic, insn.OpStr)
-    }
+	codeBytes := []byte{0x55, 0x48, 0x8b, 0x05, 0xab, 0xcd, 0xef, 0x12}
+	instructions, err := engine.Disasm(codeBytes, 0x4000, 0)
+	if err != nil {
+	    panic(err)
+	}
+
+	for _, insn := range instructions {
+	    fmt.Printf("0x%x:\t%s\t%s\n", insn.Address, insn.Mnemonic, insn.OpStr)
+	}
 */
 package gapstone
 
@@ -69,13 +70,12 @@ var dietMode = bool(C.cs_support(CS_SUPPORT_DIET))
 /* Engine represents a Capstone disassembler instance configured for a specific architecture and mode */
 type Engine struct {
 	handle C.csh // Handle to the underlying Capstone engine
-	
+
 	arch int // Architecture identifier (CS_ARCH_*)
-	
+
 	mode int // Mode identifier (CS_MODE_*)
-	
+
 	skipdata *C.cs_opt_skipdata // Skip data configuration pointer
-}
 }
 
 // Information that exists for every Instruction, regardless of arch.
@@ -85,17 +85,17 @@ type Engine struct {
 /* InstructionHeader contains basic information common to all instructions */
 type InstructionHeader struct {
 	Id uint `json:"id"` // Internal id for this instruction. Subject to change.
-	
+
 	Address uint `json:"address"` // Nominal address ($ip) of this instruction
-	
+
 	Size uint `json:"size"` // Size of the instruction in bytes
-	
+
 	Bytes []byte `json:"bytes"` // Raw instruction bytes as they appear in memory
-	
+
 	Mnemonic string `json:"mnemonic"` // Instruction mnemonic (e.g., "add", "mov")
-	
+
 	OpStr string `json:"op_str"` // Formatted operand string for the instruction
-}
+
 	// Not available without the decomposer. BE CAREFUL! By default,
 	// CS_OPT_DETAIL is set to CS_OPT_OFF so the result of accessing these
 	// members is undefined.
@@ -222,7 +222,6 @@ func (e *Engine) RegName(reg uint) string {
 	}
 	return C.GoString(C.cs_reg_name(e.handle, C.uint(reg)))
 }
-}
 
 // The arch is implicit in the Engine. Accepts a constant like
 // ARM_INSN_ADD, or insn.Id
@@ -235,7 +234,6 @@ func (e *Engine) InsnName(insn uint) string {
 		return ""
 	}
 	return C.GoString(C.cs_insn_name(e.handle, C.uint(insn)))
-}
 }
 
 // The arch is implicit in the Engine. Accepts a constant like
@@ -316,16 +314,16 @@ func (e *Engine) Disasm(input []byte, address, count uint64) ([]Instruction, err
 		case CS_ARCH_XCORE:
 			return decomposeXcore(e, insns), nil
 
+		case CS_ARCH_BPF:
+			return decomposeBpf(e, insns), nil
+
+			// TODO:
 			// CS_ARCH_M68K
 			// CS_ARCH_TMS320C64X
 			// CS_ARCH_M680X
 			// CS_ARCH_EVM
 			// CS_ARCH_MOS65XX
 			// CS_ARCH_WASM
-
-		case CS_ARCH_BPF:
-			return decomposeBpf(e, insns), nil
-
 			// CS_ARCH_RISCV
 			// CS_ARCH_MAX
 			// CS_ARCH_ALL

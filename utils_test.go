@@ -1,6 +1,9 @@
 package gapstone
 
-import "testing"
+import (
+	"bytes"
+	"testing"
+)
 
 func TestCompareNormalized(t *testing.T) {
 	type args struct {
@@ -32,6 +35,11 @@ func TestCompareNormalized(t *testing.T) {
 			name: "string string not equal",
 			args: args{a: "one", b: "two"},
 			want: false,
+		},
+		{
+			name: "bytes buffer string",
+			args: args{a: bytes.NewBufferString(" data "), b: "data"},
+			want: true,
 		},
 	}
 	for _, tt := range tests {

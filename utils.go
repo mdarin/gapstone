@@ -35,7 +35,6 @@ func isSemanticallySignificant(r rune) bool {
 		r != '\u200B' // Zero-width space
 }
 
-// AI: доработай чтобы  функция CompareNormalized принимала ещё и аргументы типа *bytes.Buffer  AI!
 // CompareNormalized надежно сравнивает строки/байты после нормализации.
 //
 // Usage examples:
