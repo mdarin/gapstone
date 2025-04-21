@@ -10,19 +10,22 @@ https://github.com/capstone-engine/capstone.git
 (from next branch by default)
 and run scripts step-by-step
 ```sh
+
 cd path/to/capstone
 make 
 sudo make install
 make clean
+ldconfig -p | grep libcapstone
+# or 
+./install-capstone.sh
+
 cd back/to/gapstone
 
 install ruby
 # or  perpare builder image
 docker build -t gapstone-builder .
 
-## generate
-
-export RUN="docker run -t --rm -v $(pwd):/build -w /build gapstone-builder"
+## Generate
 
 ./genconst path/to/clonned/capstone/bindings/python/capstone
 # or in docker builder
@@ -31,9 +34,6 @@ docker run -t --rm -v $(pwd):/build -w /build gapstone-builder ./genconst.rb cap
 ./genspec path/to/clonned/capstone/tests
 # or in docker builder
 docker run -t --rm -v $(pwd):/build -w /build  gapstone-builder ./genspec.rb capstone/tests/
-
-eport EXCLUDEDIR="gapstone"
-EXCLUDEDIR="gapstone" go test -skip-dirs="$GAPSTONE" ./...
 
 # number of times
 # try to run go test ./...
@@ -46,29 +46,38 @@ EXCLUDEDIR="gapstone" go test -skip-dirs="$GAPSTONE" ./...
 # try to fix it by this script
  ./gencomment_lines.sh 
 
+# further steps of building
 ./genresources.sh 
+./gensanity
 
 # fix junk after generation
 # and try to run tests
 # repeat until done :)
 
- go test ./...
+ go test -v ./...
  # all tests ok 
 
 
+# TODO:
+# Verify tests:
 
-# Для одного файла
-ruby parser.rb test.c
+# List available test files:
+ls *_test.go
 
-# Для всей директории (рекурсивно)
-ruby parser.rb /path/to/code/
-DEBUG=1 ruby parser.rb path/to/file.c
+# Check test file contents:
+grep -r "func Test" .
+
+# Try forcing tests to run:
+go test -v ./...
+
+# Debug exactly one test with clean before run
+./run-test-by-name.sh Test<Name> 
 ```
 
 You should see generated .go source files.
 Use it for binding in your project.
 
-## CURRENT UPSTREAM VERSION: 4.0.2
+## CURRENT UPSTREAM VERSION: 4.0.2(5.0-rc2 real)
 [![Build Status](https://travis-ci.org/knightsc/gapstone.svg?branch=master)](https://travis-ci.org/knightsc/gapstone)
 
 (head over to the next branch for the newest stuff)

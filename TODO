@@ -7,8 +7,10 @@ Issues to be solved in next versions
 [Resources]
 
 [Decomposers]
+- Generate from C-sources
 
 [Tests]
+- Generate from C-sources
 
 * Remake script to Python
 * Automate generation process
