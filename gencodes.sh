@@ -1,6 +1,8 @@
 #!/bin/bash
 # set -eux
 
+# ! Unused, but works good
+
 # скрипт для генерации такого же префикса
 generate_prefix() {
     local script_name="$0"

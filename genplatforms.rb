@@ -1,6 +1,8 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+# ! Unused, doesn't work, frozen now!
+
 require 'strscan'
 require 'pathname'
 require 'timeout'

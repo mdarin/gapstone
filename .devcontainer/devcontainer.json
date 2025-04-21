@@ -24,7 +24,8 @@
 				"eamodioutilgitlens",
 				"usernamehw.errorlens",
 				"IgorSbitnev.error-gutters",
-				"ms-vscode.cpptools-extension-pack"
+				"ms-vscode.cpptools-extension-pack",
+				"ms-python.python"
 			]
 		}
 	}
