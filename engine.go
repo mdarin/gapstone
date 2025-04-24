@@ -303,15 +303,42 @@ func (e *Engine) RegNameGeneric(reg any) string {
 // WARNING: Always returns "" if capstone built with CAPSTONE_DIET
 //
 // Parameters:
-//   - insn uint  An instruction id
+//   - insn any  An instruction id as any integer type
 //
 // Returns:
 //   - string  Its mnemonic name
-func (e *Engine) InsnName(insn uint) string {
+func (e *Engine) InsnName(insn any) string {
 	if dietMode {
 		return ""
 	}
-	return C.GoString(C.cs_insn_name(e.handle, C.uint(insn)))
+	
+	var insnUint uint
+	switch v := any(insn).(type) {
+	case int:
+		insnUint = uint(v)
+	case uint:
+		insnUint = v
+	case int8:
+		insnUint = uint(v)
+	case uint8:
+		insnUint = uint(v)
+	case int16:
+		insnUint = uint(v)
+	case uint16:
+		insnUint = uint(v)
+	case int32:
+		insnUint = uint(v)
+	case uint32:
+		insnUint = uint(v)
+	case int64:
+		insnUint = uint(v)
+	case uint64:
+		insnUint = uint(v)
+	default:
+		return ""
+	}
+	
+	return C.GoString(C.cs_insn_name(e.handle, C.uint(insnUint)))
 }
 
 // GroupName The arch is implicit in the Engine. Accepts a constant like
@@ -320,15 +347,42 @@ func (e *Engine) InsnName(insn uint) string {
 // WARNING: Always returns "" if capstone built with CAPSTONE_DIET
 //
 // Parameters:
-//   - grp uint  Group of instructions
+//   - grp any  Group of instructions as any integer type 
 //
 // Returns:
 //   - string  Name of Group of instructions
-func (e *Engine) GroupName(grp uint) string {
+func (e *Engine) GroupName(grp any) string {
 	if dietMode {
 		return ""
 	}
-	return C.GoString(C.cs_group_name(e.handle, C.uint(grp)))
+	
+	var grpUint uint
+	switch v := any(grp).(type) {
+	case int:
+		grpUint = uint(v)
+	case uint:
+		grpUint = v
+	case int8:
+		grpUint = uint(v)
+	case uint8:
+		grpUint = uint(v)
+	case int16:
+		grpUint = uint(v)
+	case uint16:
+		grpUint = uint(v)
+	case int32:
+		grpUint = uint(v)
+	case uint32:
+		grpUint = uint(v)
+	case int64:
+		grpUint = uint(v)
+	case uint64:
+		grpUint = uint(v)
+	default:
+		return ""
+	}
+	
+	return C.GoString(C.cs_group_name(e.handle, C.uint(grpUint)))
 }
 
 // SetOption Setter for Engine options CS_OPT_*
