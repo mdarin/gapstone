@@ -25,7 +25,8 @@
 				"usernamehw.errorlens",
 				"IgorSbitnev.error-gutters",
 				"ms-vscode.cpptools-extension-pack",
-				"ms-python.python"
+				"ms-python.python",
+				"huyang.go-doc-comments"
 			]
 		}
 	}
