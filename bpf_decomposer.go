@@ -17,27 +17,15 @@ package gapstone
 // #include <capstone/capstone.h>
 import "C"
 
-// import "C" needs to be on its own line. cgo, amirite? XD
 import (
 	"reflect"
 	"unsafe"
 )
 
-// Accessed via insn.Bpf.XXX
+// Accessed via insn.BPF.XXX
 type BpfInstruction struct {
-	// Opcode    uint
-	// SrcReg    uint
-	// DstReg    uint
-	// Offset    int32
-	// Immediate int64
-	Groups   []uint
 	Operands []BpfOperand
 }
-
-// type BpfShifter struct {
-// 	Type  uint
-// 	Value uint
-// }
 
 type BpfOperand struct {
 	Type uint             // BPF_OP_* - determines which field is set below

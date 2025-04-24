@@ -5,6 +5,9 @@ gapstone
 
 Gapstone is a Go binding for the Capstone disassembly library.
 
+To build:
+---
+
 Clone capstone or run install_capstone.sh script
 https://github.com/capstone-engine/capstone.git
 (from next branch by default)
@@ -75,6 +78,7 @@ go test -v ./...
 ```
 
 You should see generated .go source files.
+
 Use it for binding in your project.
 
 ## CURRENT UPSTREAM VERSION: 4.0.2(5.0-rc2 real)
@@ -116,7 +120,7 @@ Capstone offers some unparalleled features:
 
 - Distributed under the open source BSD license.
 
-Further information is available at http://www.capstone-engine.org
+Further information is available at [capstone-engine](http://www.capstone-engine.org)
 
 To install:
 ----
@@ -125,22 +129,25 @@ First install the capstone library from either https://github.com/aquynh/capston
 or http://www.capstone-engine.org
 
 Then, assuming you have set up your Go environment according to the docs, just:
+
 ```bash
-go get -u github.com/knightsc/gapstone
+go get -u github.com/mdarin/gapstone
 ```
 
-Tests are provided. You should probably run them.
+**Tests are provided. You should probably run them.**
+
 ```
-cd $GOPATH/src/github.com/knightsc/gapstone
-go test
+cd $GOPATH/src/github.com/mdarin/gapstone
+./run-tests-with-clean.sh 
 ```
 
 To start writing code:
 ----
 
-Take a look at the examples *_test.go
+Take a look at the examples `*_test.go`
 
 Here's "Hello World":
+
 ```go
 package main
 

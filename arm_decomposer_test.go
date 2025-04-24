@@ -1,6 +1,6 @@
 /*
-Gapstone is a Go binding for the Capstone disassembly library. For examples,
-try reading the *_test.go files.
+Gapstone is a Go binding for the Capstone disassembly library.
+For examples, try reading the *_test.go files.
 
 	Library Author: Nguyen Anh Quynh
 	Binding Author: Ben Nagy
@@ -25,9 +25,9 @@ func armInsnDetail(insn Instruction, engine *Engine, buf *bytes.Buffer) {
 	for i, op := range insn.Arm.Operands {
 		switch op.Type {
 		case ARM_OP_REG:
-			fmt.Fprintf(buf, "\t\toperands[%v].type: REG = %v\n", i, engine.RegName(op.Reg))
+			fmt.Fprintf(buf, "\t\toperands[%v].type: REG = %v\n", i, engine.RegName(uint(op.Reg)))
 		case ARM_OP_IMM:
-			fmt.Fprintf(buf, "\t\toperands[%v].type: IMM = 0x%x\n", i, (uint32(op.Imm)))
+			fmt.Fprintf(buf, "\t\toperands[%v].type: IMM = 0x%x\n", i, op.Imm)
 		case ARM_OP_FP:
 			fmt.Fprintf(buf, "\t\toperands[%v].type: FP = %f\n", i, op.FP)
 		case ARM_OP_MEM:
@@ -174,7 +174,6 @@ func armInsnDetail(insn Instruction, engine *Engine, buf *bytes.Buffer) {
 //	Registers read: sb
 //	Registers modified: r6
 func TestArm(t *testing.T) {
-	t.SkipNow() // TODO: remove after fix!
 
 	t.Parallel()
 
@@ -225,8 +224,9 @@ func TestArm(t *testing.T) {
 		t.Errorf("Cannot read spec file %v: %v", spec_file, err)
 	}
 
-	if fs := final.String(); !CompareNormalized(fs, spec) {
-		fmt.Println(fs)
+	if !CompareNormalized(final, spec) {
+		// * Uncomment for Debugging. Diff output with arm.SPEC
+		fmt.Println(final.String())
 		t.Errorf("Output failed to match spec!")
 	} else {
 		t.Logf("Clean diff with %v.\n", spec_file)

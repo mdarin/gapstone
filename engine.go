@@ -217,6 +217,7 @@ func (e *Engine) Errno() error { return Errno(C.cs_errno(e.handle)) }
 // RegName converts a register number to its mnemonic name
 // Example: For x86, RegName(0) returns "al", RegName(1) returns "cl"
 func (e *Engine) RegName(reg uint) string {
+	// TODO: try to use generics with CommonInt type  and convert it to uint
 	if dietMode {
 		return ""
 	}

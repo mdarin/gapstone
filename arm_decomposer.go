@@ -22,18 +22,20 @@ import (
 	"unsafe"
 )
 
+// FIXME: somthing goes wrond for thumb2 decomposing for ex..
+
 // Accessed via insn.Arm.XXX
 type ArmInstruction struct {
-	UserMode    bool
-	VectorSize  int
-	VectorData  int
-	CPSMode     int
-	CPSFlag     int
-	CC          uint
-	UpdateFlags bool
-	Writeback   bool
-	MemBarrier  int
-	Operands    []ArmOperand
+	UserMode    bool         ///< User-mode registers to be loaded (for LDM/STM instructions)
+	VectorSize  int          ///< Scalar size for vector instructions
+	VectorData  int          ///< Data type for elements of vector instructions
+	CPSMode     int          ///< CPS mode for CPS instruction
+	CPSFlag     int          ///< CPS mode for CPS instruction //? flag
+	CC          uint         ///< conditional code for this insn
+	UpdateFlags bool         ///< does this insn update flags?
+	Writeback   bool         ///< does this insn write-back?
+	MemBarrier  int          ///< Option for some memory barrier instructions
+	Operands    []ArmOperand ///< operands for this instruction.
 }
 
 type ArmShifter struct {
@@ -42,24 +44,36 @@ type ArmShifter struct {
 }
 
 type ArmOperand struct {
-	VectorIndex int
+	VectorIndex int ///< Vector Index for some vector operands (or -1 if irrelevant)///< Vector Index for some vector operands (or -1 if irrelevant)
 	Shift       ArmShifter
-	Type        uint // ARM_OP_* - determines which field is set below
-	Reg         uint
-	Imm         int32
-	FP          float64
-	Mem         ArmMemoryOperand
-	Setend      int
-	Subtracted  bool
-	Access      uint
-	NeonLane    int
+	// operand type
+	Type   uint             // ARM_OP_* - determines which field is set below
+	Reg    int              ///< register value for REG/SYSREG operand
+	Imm    int32            ///< immediate value for C-IMM, P-IMM or IMM operand
+	FP     float64          ///< floating point value for FP operand
+	Mem    ArmMemoryOperand ///< base/index/scale/disp value for MEM operand
+	Setend int              ///< SETEND instruction's operand type
+
+	/// in some instructions, an operand can be subtracted or added to
+	/// the base register,
+	/// if TRUE, this operand is subtracted. otherwise, it is added.
+	Subtracted bool
+
+	/// How is this operand accessed? (READ, WRITE or READ|WRITE)
+	/// This field is combined of cs_ac_type.
+	/// NOTE: this field is irrelevant if engine is compiled in DIET mode.
+	Access uint8
+	/// Neon lane index for NEON instructions (or -1 if irrelevant)
+	NeonLane int8
 }
 
 type ArmMemoryOperand struct {
-	Base   uint
-	Index  uint
-	Scale  int
-	Disp   int
+	Base  uint ///< base register
+	Index uint ///< index register
+	Scale int  ///< scale for index register (can be 1, or -1)
+	Disp  int  ///< displacement/offset value
+	/// left-shift on index register, or 0 if irrelevant
+	/// INFO: this value can also be fetched via operand.shift.value
 	LShift int
 }
 
@@ -115,8 +129,8 @@ func fillArmHeader(raw C.cs_insn, insn *Instruction) {
 			Type:        uint(cop._type),
 			VectorIndex: int(cop.vector_index),
 			Subtracted:  bool(cop.subtracted),
-			Access:      uint(cop.access),
-			NeonLane:    int(cop.neon_lane),
+			Access:      uint8(cop.access),
+			NeonLane:    int8(cop.neon_lane),
 		}
 		switch cop._type {
 		// fake a union by setting only the correct struct member
@@ -125,7 +139,7 @@ func fillArmHeader(raw C.cs_insn, insn *Instruction) {
 		case ARM_OP_FP:
 			gop.FP = float64(*(*C.double)(unsafe.Pointer(&cop.anon0[0])))
 		case ARM_OP_REG, ARM_OP_SYSREG:
-			gop.Reg = uint(*(*C.uint)(unsafe.Pointer(&cop.anon0[0])))
+			gop.Reg = int(*(*C.int)(unsafe.Pointer(&cop.anon0[0])))
 		case ARM_OP_MEM:
 			cmop := (*C.arm_op_mem)(unsafe.Pointer(&cop.anon0[0]))
 			gop.Mem = ArmMemoryOperand{
