@@ -53,6 +53,7 @@ import "C"
 import (
 	"reflect"
 	"unsafe"
+	// "github.com/samber/lo"
 )
 
 // Since this is a build-time option for the C lib, it seems logical to have
@@ -177,7 +178,7 @@ func fillGenericHeader(e *Engine, raw C.cs_insn, insn *Instruction) {
 
 }
 
-// Close  the underlying C handle and resources used by this Engine
+// Close  Closes the underlying C handle and resources used by this Engine
 //
 // Returns:
 //   - error
@@ -189,19 +190,19 @@ func (e *Engine) Close() error {
 	return Errno(res)
 }
 
-// Arch Accessor for the Engine architecture CS_ARCH_*
+// Arch  Accessor for the Engine architecture CS_ARCH_*
 //
 // Returns:
 //   - int  The Engine architecture set
 func (e *Engine) Arch() int { return e.arch }
 
-// Mode Accessor for the Engine mode CS_MODE_*
+// Mode  Accessor for the Engine mode CS_MODE_*
 //
 // Returns:
 //   - int  The Engine mode set
 func (e *Engine) Mode() int { return e.mode }
 
-// Support Check if a particular arch is supported by this engine.
+// Support  Check if a particular arch is supported by this engine.
 // To verify if this engine supports everything, use CS_ARCH_ALL
 //
 // Parameters:
@@ -250,10 +251,19 @@ func (e *Engine) RegName(reg uint) string {
 	return C.GoString(C.cs_reg_name(e.handle, C.uint(reg)))
 }
 
-// TODO: try to use generics with CommonInt type  and convert it to uint
-// RegNameGeneric - обертка, принимающая любой целочисленный тип
-/*
-func (e *Engine) RegNameGeneric[T CommonInt](reg T) string {
+// AI: релаизуй подобные RegNameGeneric фунцкци обёртки для
+// 1 для InsnName функции
+// 2 для  GroupName функции AI!
+
+// RegNameGeneric RegNameGeneric - wrapper for any integer value.
+// With CommonInt type  and convert it to uint.
+//
+// Parameters:
+//   - reg any  Register id.
+//
+// Returns:
+//   - string Register mnemonic name.
+func (e *Engine) RegNameGeneric(reg any) string {
 	// Приводим тип к uint
 	var regUint uint
 	switch v := any(reg).(type) {
@@ -283,7 +293,6 @@ func (e *Engine) RegNameGeneric[T CommonInt](reg T) string {
 
 	return e.RegName(regUint)
 }
-*/
 
 // InsnName converts an instruction id to its mnemonic name
 // Example: For x86, InsnName(1) returns "add"
@@ -341,6 +350,21 @@ func (e *Engine) SetOption(ty, value uint) error {
 		return nil
 	}
 	return Errno(res)
+}
+
+// TODO:
+// opts := {init..}
+// engine.AppyOptions(opts)
+// insted of cycle...
+func (e *Engine) ApplyOptions(opts []any) error {
+	// lo.ForEach(opts, func(x any, _ int) {
+	// 	println(x)
+	// })
+	for _, opt := range opts {
+		_ = opt
+	}
+
+	return nil
 }
 
 // Disasm  Disassemble a []byte full of opcodes.
