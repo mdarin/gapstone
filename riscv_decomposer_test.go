@@ -4,6 +4,10 @@ import (
 	"testing"
 )
 
+// AI: 1 перепеши данный файл
+// 2 возьми за основу файл bpf_decomposer_test.go
+// 3 замени BPF на RICSV AI!
+
 func TestRiscvDecomposition(t *testing.T) {
 	e := NewEngine(CS_ARCH_RISCV, CS_MODE_RISCV64)
 	defer e.Close()
