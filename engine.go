@@ -9,7 +9,7 @@ try reading the *_test.go files.
 */
 
 /*
-Package capstone provides a Go binding for the Capstone disassembly framework.
+Package gapstone provides a Go binding for the Capstone disassembly framework.
 
 Capstone is a high-performance disassembly engine supporting multiple architectures
 and providing detailed instruction information including operands, registers,
@@ -69,12 +69,9 @@ var dietMode = bool(C.cs_support(CS_SUPPORT_DIET))
 // the C lib to free resources.
 /* Engine represents a Capstone disassembler instance configured for a specific architecture and mode */
 type Engine struct {
-	handle C.csh // Handle to the underlying Capstone engine
-
-	arch int // Architecture identifier (CS_ARCH_*)
-
-	mode int // Mode identifier (CS_MODE_*)
-
+	handle   C.csh              // Handle to the underlying Capstone engine
+	arch     int                // Architecture identifier (CS_ARCH_*)
+	mode     int                // Mode identifier (CS_MODE_*)
 	skipdata *C.cs_opt_skipdata // Skip data configuration pointer
 }
 
@@ -84,18 +81,12 @@ type Engine struct {
 // Instruction groups etc.
 /* InstructionHeader contains basic information common to all instructions */
 type InstructionHeader struct {
-	Id uint `json:"id"` // Internal id for this instruction. Subject to change.
-
-	Address uint `json:"address"` // Nominal address ($ip) of this instruction
-
-	Size uint `json:"size"` // Size of the instruction in bytes
-
-	Bytes []byte `json:"bytes"` // Raw instruction bytes as they appear in memory
-
+	Id       uint   `json:"id"`       // Internal id for this instruction. Subject to change.
+	Address  uint   `json:"address"`  // Nominal address ($ip) of this instruction
+	Size     uint   `json:"size"`     // Size of the instruction in bytes
+	Bytes    []byte `json:"bytes"`    // Raw instruction bytes as they appear in memory
 	Mnemonic string `json:"mnemonic"` // Instruction mnemonic (e.g., "add", "mov")
-
-	OpStr string `json:"op_str"` // Formatted operand string for the instruction
-
+	OpStr    string `json:"op_str"`   // Formatted operand string for the instruction
 	// Not available without the decomposer. BE CAREFUL! By default,
 	// CS_OPT_DETAIL is set to CS_OPT_OFF so the result of accessing these
 	// members is undefined.
@@ -121,10 +112,16 @@ type Instruction struct {
 	SysZ  *SysZInstruction
 	Xcore *XcoreInstruction
 	BPF   *BpfInstruction
+	RISCV *RISCVInstruction
 	// TODO: Add new arch here
 }
 
-// Called by the arch specific decomposers
+// fillGenericHeader Called by the arch specific decomposers
+//
+// Parameters:
+//   - e *Engine  The Engine object, must been already inited
+//   - raw C.cs_insn  Raw code instruction
+//   - insn *Instruction  Decomposed instruction to go structure
 func fillGenericHeader(e *Engine, raw C.cs_insn, insn *Instruction) {
 
 	insn.Id = uint(raw.id)
@@ -180,7 +177,10 @@ func fillGenericHeader(e *Engine, raw C.cs_insn, insn *Instruction) {
 
 }
 
-// Close the underlying C handle and resources used by this Engine
+// Close  the underlying C handle and resources used by this Engine
+//
+// Returns:
+//   - error
 func (e *Engine) Close() error {
 	res := C.cs_close(&e.handle)
 	if e.skipdata != nil {
@@ -189,47 +189,115 @@ func (e *Engine) Close() error {
 	return Errno(res)
 }
 
-// Accessor for the Engine architecture CS_ARCH_*
+// Arch Accessor for the Engine architecture CS_ARCH_*
+//
+// Returns:
+//   - int  The Engine architecture set
 func (e *Engine) Arch() int { return e.arch }
 
-// Accessor for the Engine mode CS_MODE_*
+// Mode Accessor for the Engine mode CS_MODE_*
+//
+// Returns:
+//   - int  The Engine mode set
 func (e *Engine) Mode() int { return e.mode }
 
-// Check if a particular arch is supported by this engine.
+// Support Check if a particular arch is supported by this engine.
 // To verify if this engine supports everything, use CS_ARCH_ALL
+//
+// Parameters:
+//   - arch int  An architecture id
+//
+// Returns:
+//   - bool  Yes/No
 func (e *Engine) Support(arch int) bool { return bool(C.cs_support(C.int(arch))) }
 
-// Version information.
+// Version Returns libcapstone version information.
+//
+// Returns:
+//   - maj int  Major part of version
+//   - min int  Minor part of version
 func (e *Engine) Version() (maj, min int) {
 	C.cs_version((*C.int)(unsafe.Pointer(&maj)), (*C.int)(unsafe.Pointer(&min)))
 	return
 }
 
-// Getter for the last Errno from the engine. Normal code shouldn't need to
+// Errno Getter for the last Errno from the engine. Normal code shouldn't need to
 // access this directly, but it's exported just in case.
+//
+// Returns:
+//   - error
 func (e *Engine) Errno() error { return Errno(C.cs_errno(e.handle)) }
 
+// RegName converts a register number to its mnemonic name
+//
+// Example: For x86, RegName(0) returns "al", RegName(1) returns "cl"
+//
+// WARNING: Always returns "" if capstone built with CAPSTONE_DIET
 // The arch is implicit in the Engine. Accepts either a constant like ARM_REG_R0
 // or insn.Arm.Operands[0].Reg, or anything that refers to a Register like
 // insn.X86.SibBase etc
 //
-// WARNING: Always returns "" if capstone built with CAPSTONE_DIET
-// RegName converts a register number to its mnemonic name
-// Example: For x86, RegName(0) returns "al", RegName(1) returns "cl"
+// Parameters:
+//   - reg uint  A register number
+//
+// Returns:
+//   - string  Its mnemonic name
 func (e *Engine) RegName(reg uint) string {
-	// TODO: try to use generics with CommonInt type  and convert it to uint
+
 	if dietMode {
 		return ""
 	}
 	return C.GoString(C.cs_reg_name(e.handle, C.uint(reg)))
 }
 
+// TODO: try to use generics with CommonInt type  and convert it to uint
+// RegNameGeneric - обертка, принимающая любой целочисленный тип
+/*
+func (e *Engine) RegNameGeneric[T CommonInt](reg T) string {
+	// Приводим тип к uint
+	var regUint uint
+	switch v := any(reg).(type) {
+	case int:
+		regUint = uint(v)
+	case uint:
+		regUint = v
+	case int8:
+		regUint = uint(v)
+	case uint8:
+		regUint = uint(v)
+	case int16:
+		regUint = uint(v)
+	case uint16:
+		regUint = uint(v)
+	case int32:
+		regUint = uint(v)
+	case uint32:
+		regUint = uint(v)
+	case int64:
+		regUint = uint(v)
+	case uint64:
+		regUint = uint(v)
+	default:
+		return ""
+	}
+
+	return e.RegName(regUint)
+}
+*/
+
+// InsnName converts an instruction id to its mnemonic name
+// Example: For x86, InsnName(1) returns "add"
+//
 // The arch is implicit in the Engine. Accepts a constant like
 // ARM_INSN_ADD, or insn.Id
 //
 // WARNING: Always returns "" if capstone built with CAPSTONE_DIET
-// InsnName converts an instruction id to its mnemonic name
-// Example: For x86, InsnName(1) returns "add"
+//
+// Parameters:
+//   - insn uint  An instruction id
+//
+// Returns:
+//   - string  Its mnemonic name
 func (e *Engine) InsnName(insn uint) string {
 	if dietMode {
 		return ""
@@ -237,10 +305,16 @@ func (e *Engine) InsnName(insn uint) string {
 	return C.GoString(C.cs_insn_name(e.handle, C.uint(insn)))
 }
 
-// The arch is implicit in the Engine. Accepts a constant like
+// GroupName The arch is implicit in the Engine. Accepts a constant like
 // ARM_GRP_JUMP, or insn.Groups[0]
 //
 // WARNING: Always returns "" if capstone built with CAPSTONE_DIET
+//
+// Parameters:
+//   - grp uint  Group of instructions
+//
+// Returns:
+//   - string  Name of Group of instructions
 func (e *Engine) GroupName(grp uint) string {
 	if dietMode {
 		return ""
@@ -248,7 +322,14 @@ func (e *Engine) GroupName(grp uint) string {
 	return C.GoString(C.cs_group_name(e.handle, C.uint(grp)))
 }
 
-// Setter for Engine options CS_OPT_*
+// SetOption Setter for Engine options CS_OPT_*
+//
+// Parameters:
+//   - ty uint  Engine option type
+//   - value uint  Engine options value
+//
+// Returns:
+//   - error
 func (e *Engine) SetOption(ty, value uint) error {
 	res := C.cs_option(
 		e.handle,
@@ -262,11 +343,17 @@ func (e *Engine) SetOption(ty, value uint) error {
 	return Errno(res)
 }
 
-// Disassemble a []byte full of opcodes.
-//   - address - Address of the first instruction in the given code buffer.
-//   - count - Number of instructions to disassemble, 0 to disassemble the whole []byte
-//
+// Disasm  Disassemble a []byte full of opcodes.
 // Underlying C resources are automatically free'd by this function.
+//
+// Parameters:
+//   - input []byte  Machine instructions in byte codes
+//   - address uint64  Address of the first instruction in the given code buffer.
+//   - count uint64  Number of instructions to disassemble, 0 to disassemble the whole []byte
+//
+// Returns:
+//   - []Instruction  Disassemled instructions
+//   - error
 func (e *Engine) Disasm(input []byte, address, count uint64) ([]Instruction, error) {
 
 	var insn *C.cs_insn
@@ -318,6 +405,9 @@ func (e *Engine) Disasm(input []byte, address, count uint64) ([]Instruction, err
 		case CS_ARCH_BPF:
 			return decomposeBpf(e, insns), nil
 
+		case CS_ARCH_RISCV:
+			return decomposeRiscv(e, insns), nil
+
 			// TODO:
 			// CS_ARCH_M68K
 			// CS_ARCH_TMS320C64X
@@ -325,7 +415,6 @@ func (e *Engine) Disasm(input []byte, address, count uint64) ([]Instruction, err
 			// CS_ARCH_EVM
 			// CS_ARCH_MOS65XX
 			// CS_ARCH_WASM
-			// CS_ARCH_RISCV
 			// CS_ARCH_MAX
 			// CS_ARCH_ALL
 
@@ -336,6 +425,14 @@ func (e *Engine) Disasm(input []byte, address, count uint64) ([]Instruction, err
 	return []Instruction{}, e.Errno()
 }
 
+// decomposeGeneric Generic decomposer function.
+//
+// Parameters:
+//   - e *Engine  The Engine object
+//   - raws []C.cs_insn  Machine instructions
+//
+// Returns:
+//   - []Instruction  Decomposed instructions
 func decomposeGeneric(e *Engine, raws []C.cs_insn) []Instruction {
 	decomposed := []Instruction{}
 	for _, raw := range raws {
@@ -361,10 +458,13 @@ type cbWrapper struct {
 	ud interface{}
 }
 
-// Enables capstone CS_OPT_SKIPDATA. If no SkipDataConfig is passed ( nil )
+// SkipDataStart Enables capstone CS_OPT_SKIPDATA. If no SkipDataConfig is passed ( nil )
 // the default behaviour will be enabled. It is valid to pass any combination
 // of the SkipDataConfig options, although UserData without a Callback will be
 // ignored.
+//
+// Parameters:
+//   - config *SkipDataConfig  Configuration to data skipping.
 func (e *Engine) SkipDataStart(config *SkipDataConfig) {
 
 	if config != nil {
@@ -396,7 +496,7 @@ func (e *Engine) SkipDataStart(config *SkipDataConfig) {
 	C.cs_option(e.handle, CS_OPT_SKIPDATA, CS_OPT_ON)
 }
 
-// Disable CS_OPT_SKIPDATA. Removes any registered callbacks and frees
+// SkipDataStop Disable CS_OPT_SKIPDATA. Removes any registered callbacks and frees
 // resources.
 func (e *Engine) SkipDataStop() {
 	C.cs_option(e.handle, CS_OPT_SKIPDATA, CS_OPT_OFF)
@@ -407,7 +507,17 @@ func (e *Engine) SkipDataStop() {
 	e.skipdata = nil
 }
 
-// Create a new Engine with the specified arch and mode
+// New Creates a new Engine with the specified arch and mode CS_ARCH_ , CS_MODE_
+//
+// Example: CS_ARCH_ARM, CS_MODE_ARM
+//
+// Parameters:
+//   - arch int  Architecture id
+//   - mode int  Mode id
+//
+// Returns:
+//   - Engine  Initialized Engine object
+//   - error
 func New(arch int, mode int) (Engine, error) {
 	var handle C.csh
 	res := C.cs_open(C.cs_arch(arch), C.cs_mode(mode), &handle)
