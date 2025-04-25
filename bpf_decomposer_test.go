@@ -37,7 +37,7 @@ func bpfInsnDetail(insn Instruction, engine *Engine, buf *bytes.Buffer) {
 			fmt.Fprintf(buf, "\t\toperands[%v].type: REG = %v\n", i, engine.RegName(uint(op.Reg)))
 
 		case BPF_OP_IMM:
-			fmt.Fprintf(buf, "\t\toperands[%v].type: IMM = 0x%x\n", i, op.Imm)
+			fmt.Fprintf(buf, "\t\toperands[%v].type: IMM = 0x%x\n", i, uint64(op.Imm))
 
 		case BPF_OP_OFF:
 			fmt.Fprintf(buf, "\t\toperands[%v].type: OFF = +0x%x\n", i, op.Off)
