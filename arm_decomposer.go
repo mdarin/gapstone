@@ -48,7 +48,7 @@ type ArmOperand struct {
 	Shift       ArmShifter
 	// operand type
 	Type   uint             // ARM_OP_* - determines which field is set below
-	Reg    int              ///< register value for REG/SYSREG operand
+	Reg    uint             ///< register value for REG/SYSREG operand
 	Imm    int32            ///< immediate value for C-IMM, P-IMM or IMM operand
 	FP     float64          ///< floating point value for FP operand
 	Mem    ArmMemoryOperand ///< base/index/scale/disp value for MEM operand
@@ -139,7 +139,7 @@ func fillArmHeader(raw C.cs_insn, insn *Instruction) {
 		case ARM_OP_FP:
 			gop.FP = float64(*(*C.double)(unsafe.Pointer(&cop.anon0[0])))
 		case ARM_OP_REG, ARM_OP_SYSREG:
-			gop.Reg = int(*(*C.int)(unsafe.Pointer(&cop.anon0[0])))
+			gop.Reg = uint(*(*C.int)(unsafe.Pointer(&cop.anon0[0])))
 		case ARM_OP_MEM:
 			cmop := (*C.arm_op_mem)(unsafe.Pointer(&cop.anon0[0]))
 			gop.Mem = ArmMemoryOperand{
