@@ -2,6 +2,8 @@ package gapstone
 
 import (
 	"bytes"
+	"fmt"
+	"math/bits"
 	"unicode"
 )
 
@@ -87,4 +89,60 @@ func CompareNormalized(a, b any) bool {
 	default:
 		return false
 	}
+}
+
+// PrettyPrintHex форматирует число в hex с автоматическим выбором полного представления.
+// Примеры вывода
+//
+//	PrettyPrintHex(0xc)           -> 0xc
+//	PrettyPrintHex(0x6)           -> 0x6
+//	PrettyPrintHex(0xfffffffffffffdd0) -> 0xfffffffffffffdd0
+//	PrettyPrintHex(255)           -> 0xff
+//	PrettyPrintHex(int64(-1))     -> 0xffffffffffffffff (полное представление)
+//	PrettyPrintHex("test")      -> "test" (неподдерживаемый тип)
+func PrettyPrintHex(num any) string {
+	var n uint64
+
+	// Проверяем, является ли значение строкой (особый случай)
+	if s, ok := num.(string); ok {
+		return s // Возвращаем строку как есть
+	}
+
+	// Приводим число к uint64 (поддерживаем основные целочисленные типы)
+	switch v := num.(type) {
+	case int:
+		n = uint64(v)
+	case int8:
+		n = uint64(v)
+	case int16:
+		n = uint64(v)
+	case int32:
+		n = uint64(v)
+	case int64:
+		n = uint64(v)
+	case uint:
+		n = uint64(v)
+	case uint8:
+		n = uint64(v)
+	case uint16:
+		n = uint64(v)
+	case uint32:
+		n = uint64(v)
+	case uint64:
+		n = v
+	default:
+		return fmt.Sprintf("%v", num) // Для неподдерживаемых типов выводим как есть
+	}
+
+	// Определяем, нужно ли полное представление (если есть ведущие нули в 64-битном представлении)
+	leadingZeros := bits.LeadingZeros64(n)
+	isLong := leadingZeros < 6 // Примерный порог: если меньше 6 ведущих нулей, считаем "длинным"
+
+	// %#x — форматирует число в hex с префиксом 0x.
+	// 0x%x — то же самое, но префикс добавлен вручную.
+	// %016x — гарантирует вывод 16 символов, дополняя нулями слева (но в данном случае число уже занимает 16 hex-цифр).
+	if isLong {
+		return fmt.Sprintf("0x%016x", n) // Полное 64-битное представление
+	}
+	return fmt.Sprintf("0x%x", n) // Короткий формат
 }
