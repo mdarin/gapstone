@@ -22,6 +22,7 @@ echo -e "${ARROW} Running test ${BLUE}${TEST_NAME}${NC}"
     # Запуск теста с проверкой результата
     if go test -v -timeout 30s -run "${TEST_NAME}"; then
         echo -e "${CHECK} Success test ${BLUE}${TEST_NAME}${NC}"
+        exit 0
     else
         echo -e "${CROSS} ${RED}Failed${NC} test ${BLUE}${TEST_NAME}${NC}"
         exit 1 # Выход с ошибкой если тест упал

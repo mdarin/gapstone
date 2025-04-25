@@ -50,6 +50,7 @@ print_test_files_list
     # Запуск теста с проверкой результата
     if go test -v -timeout 30s ./...; then
         echo -e "${CHECK} Success"
+        exit 0
     else
         echo -e "${CROSS} ${RED}Failed${NC}"
         exit 1 # Выход с ошибкой если тест упал
