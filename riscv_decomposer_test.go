@@ -4,29 +4,24 @@ import (
 	"bytes"
 	"fmt"
 	"os"
-	"strings"
 	"testing"
 
 	"github.com/avito-tech/normalize"
 )
 
 func riscvInsnDetail(insn Instruction, engine *Engine, buf *bytes.Buffer) {
-	fmt.Fprintf(buf, "\tGroups:")
-	for _, group := range insn.Groups {
-		fmt.Fprintf(buf, " %s", engine.GroupName(group))
-	}
-	fmt.Fprintf(buf, "\n")
-
-	if oplen := len(insn.Riscv.Operands); oplen >= 0 {
-		fmt.Fprintf(buf, "\tOperand count: %v\n", oplen)
+	if oplen := len(insn.RISCV.Operands); oplen > 0 {
+		fmt.Fprintf(buf, "\top_count: %v\n", oplen)
 	}
 
-	for i, op := range insn.Riscv.Operands {
+	for i, op := range insn.RISCV.Operands {
 		switch op.Type {
 		case RISCV_OP_IMM:
-			fmt.Fprintf(buf, "\t\toperands[%v].type: IMM = 0x%x\n", i, op.Imm)
+			fmt.Fprintf(buf, "\t\toperands[%v].type: IMM = %s\n", i, PrettyPrintHex(op.Imm))
+
 		case RISCV_OP_REG:
 			fmt.Fprintf(buf, "\t\toperands[%v].type: REG = %s\n", i, engine.RegName(op.Reg))
+
 		case RISCV_OP_MEM:
 			fmt.Fprintf(buf, "\t\toperands[%v].type: MEM\n", i)
 			if op.Mem.Base != RISCV_REG_INVALID {
@@ -34,10 +29,15 @@ func riscvInsnDetail(insn Instruction, engine *Engine, buf *bytes.Buffer) {
 			}
 			fmt.Fprintf(buf, "\t\t\toperands[%v].mem.disp: 0x%x\n", i, uint64(op.Mem.Disp))
 		}
+	}
 
-		if op.Access != 0 {
-			fmt.Fprintf(buf, "\t\t\tAccess type: %v\n", op.Access)
+	//print the groups this instruction belongs to
+	if len(insn.Groups) > 0 {
+		fmt.Fprintf(buf, "\tThis instruction belongs to groups:")
+		for _, group := range insn.Groups {
+			fmt.Fprintf(buf, " %s", engine.GroupName(group))
 		}
+		fmt.Fprintf(buf, "\n")
 	}
 
 	if len(insn.AllRegistersRead) > 0 {
@@ -63,7 +63,7 @@ func TestRiscv(t *testing.T) {
 	t.Parallel()
 
 	final := new(bytes.Buffer)
-	spec_file := "riscv_spec.txt"
+	spec_file := RiscvSpec
 
 	for i, platform := range riscvPlatforms {
 		engine, err := New(platform.arch, platform.mode)
@@ -91,7 +91,7 @@ func TestRiscv(t *testing.T) {
 		defer engine.Close()
 
 		input := []byte(platform.code)
-		address := uint64(0x00)
+		address := uint64(0x1000)
 		count := uint64(0)
 
 		insns, err := engine.Disasm(input, address, count)
@@ -105,34 +105,37 @@ func TestRiscv(t *testing.T) {
 				fmt.Fprintf(final, "0x%x:\t%s\t%s\n", insn.Address, insn.Mnemonic, insn.OpStr)
 				riscvInsnDetail(insn, &engine, final)
 			}
+			fmt.Fprintf(final, "0x%x:\n\n", insns[len(insns)-1].Address+insns[len(insns)-1].Size)
 		} else {
 			t.Errorf("Disassembly error: %v\n", err)
 		}
+	}
 
-		spec, err := os.ReadFile(spec_file)
-		if err != nil {
-			t.Errorf("Cannot read spec file %v: %v", spec_file, err)
-		}
+	spec, err := os.ReadFile(spec_file)
+	if err != nil {
+		t.Errorf("Cannot read spec file %v: %v", spec_file, err)
+	}
 
-		similarityThreshold := 0.01
-		isSimilar := normalize.AreStringsSimilar(string(spec), final.String(), similarityThreshold)
-		t.Logf("String similariti Levenstein distance: %f isSimilar: %t", similarityThreshold, isSimilar)
+	similarityThreshold := 0.01
+	isSimilar := normalize.AreStringsSimilar(string(spec), final.String(), similarityThreshold)
+	t.Logf("String similariti Levenstein distance: %f isSimilar: %t", similarityThreshold, isSimilar)
 
-		if !CompareNormalized(final.String(), spec) {
-			fmt.Println(final.String())
-			t.Errorf("Output failed to match spec!")
-		} else {
-			t.Logf("Clean diff with %v.\n", spec_file)
-		}
+	if !CompareNormalized(final.String(), spec) {
+		// * Uncomment to debugging. Diff output with riscv.SPEC
+		// fmt.Println(final.String())
+		t.Errorf("Output failed to match spec!")
+	} else {
+		t.Logf("Clean diff with %v.\n", spec_file)
 	}
 }
 
-func dumpHex(data []byte, buf *bytes.Buffer) {
-	for i, b := range data {
-		if i > 0 && i%8 == 0 {
-			fmt.Fprintf(buf, " ")
-		}
-		fmt.Fprintf(buf, "%02x ", b)
-	}
-	fmt.Fprintf(buf, "\n")
-}
+// TODO: remove if no needed
+// func dumpHex(data []byte, buf *bytes.Buffer) {
+// 	for i, b := range data {
+// 		if i > 0 && i%8 == 0 {
+// 			fmt.Fprintf(buf, " ")
+// 		}
+// 		fmt.Fprintf(buf, "%02x ", b)
+// 	}
+// 	fmt.Fprintf(buf, "\n")
+// }
