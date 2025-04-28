@@ -24,40 +24,58 @@ import (
 )
 
 // Accessed via insn.Arm64.XXX
+
+// Instruction structure
 type Arm64Instruction struct {
-	CC          uint
-	UpdateFlags bool
-	Writeback   bool
-	Operands    []Arm64Operand
+	CC          uint           ///< conditional code for this insn
+	UpdateFlags bool           ///< does this insn update flags?
+	Writeback   bool           ///< does this insn request writeback? 'True' means 'yes'
+	PostIndex   bool           ///< only set if writeback is 'True', if 'False' pre-index, otherwise post.
+	Operands    []Arm64Operand ///< operands for this instruction.
 }
 
 type Arm64Shifter struct {
-	Type  uint
-	Value uint
+	Type  uint ///< shifter type of this operand
+	Value uint ///< shifter value of this operand
 }
 
+// Instruction operand
 type Arm64Operand struct {
-	VectorIndex int
-	Vas         int
-	//Vess        int
-	Shift    Arm64Shifter
-	Ext      uint
-	Type     uint // ARM64_OP_* - determines which field is set below
-	Reg      uint
-	Imm      int64
-	FP       float64
-	Mem      Arm64MemoryOperand
-	PState   int
-	Sys      uint
-	Prefetch int
-	Barrier  int
+	VectorIndex int                ///< Vector Index for some vector operands (or -1 ifirrelevant)
+	Vas         int                ///< Vector Arrangement Specifier
+	Shift       Arm64Shifter       ///< shifter type of this operand
+	Ext         uint               ///< extender type of this operand
+	Type        uint               // ARM64_OP_* - determines which field is set below
+	Reg         uint               ///< register value for REG operand
+	Imm         int64              ///< immediate value, or index for C-IMM or IMM operand
+	FP          float64            ///< floating point value for FP operand
+	Mem         Arm64MemoryOperand ///< base/index/scale/disp value for MEM operand
+	PState      int                ///< PState field of MSR instruction.
+	Sys         uint               ///< IC/DC/AT/TLBI operation (see arm64_ic_op, arm64_dc_op, arm64_at_op, arm64_tlbi_op)
+	Prefetch    int                ///< PRFM operation.
+	Barrier     int                ///< Memory barrier operation (ISB/DMB/DSB instructions).
+	/// How is this operand accessed? (READ, WRITE or READ|WRITE)
+	/// This field is combined of cs_ac_type.
+	/// NOTE: this field is irrelevant if engine is compiled in DIET mode.
 	Access   uint
+	SMEIndex Arm64OperandSMEIndex ///< base/disp value for matrix tile slice instructions.
+	SVCR     uint                 ///< MSR/MRS SVCR instruction variant.
 }
 
+// Instruction's operand referring to memory
+// This is associated with ARM64_OP_MEM operand type above
 type Arm64MemoryOperand struct {
-	Base  uint
-	Index uint
-	Disp  int32
+	Base  uint  ///< base register
+	Index uint  ///< index register
+	Disp  int32 ///< displacement/offset value
+}
+
+// SME Instruction's operand has index
+// This is associated with ARM64_OP_SME_INDEX operand type above
+type Arm64OperandSMEIndex struct {
+	Base uint  ///< base register
+	Reg  uint  ///< register being indexed
+	Disp int32 ///< displacement/offset value
 }
 
 // Number of Operands of a given ARM64_OP_* type
@@ -70,6 +88,10 @@ func (insn Arm64Instruction) OpCount(optype uint) int {
 	}
 	return count
 }
+
+// TODO:
+// FIXME: Update test!
+// + PostIndex
 
 func fillArm64Header(raw C.cs_insn, insn *Instruction) {
 
@@ -84,6 +106,7 @@ func fillArm64Header(raw C.cs_insn, insn *Instruction) {
 		CC:          uint(cs_arm64.cc),
 		UpdateFlags: bool(cs_arm64.update_flags),
 		Writeback:   bool(cs_arm64.writeback),
+		PostIndex:   bool(cs_arm64.post_index),
 	}
 
 	// Cast the op_info to a []C.cs_arm6464_op

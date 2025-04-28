@@ -13,7 +13,7 @@ package gapstone
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"testing"
 )
 
@@ -28,7 +28,7 @@ func arm64InsnDetail(insn Instruction, engine *Engine, buf *bytes.Buffer) {
 		case ARM64_OP_REG:
 			fmt.Fprintf(buf, "\t\toperands[%v].type: REG = %v\n", i, engine.RegName(op.Reg))
 		case ARM64_OP_IMM:
-			fmt.Fprintf(buf, "\t\toperands[%v].type: IMM = 0x%x\n", i, (uint64(op.Imm)))
+			fmt.Fprintf(buf, "\t\toperands[%v].type: IMM = 0x%x\n", i, op.Imm)
 		case ARM64_OP_FP:
 			fmt.Fprintf(buf, "\t\toperands[%v].type: FP = %f\n", i, op.FP)
 		case ARM64_OP_MEM:
@@ -42,7 +42,10 @@ func arm64InsnDetail(insn Instruction, engine *Engine, buf *bytes.Buffer) {
 					i, engine.RegName(op.Mem.Index))
 			}
 			if op.Mem.Disp != 0 {
-				fmt.Fprintf(buf, "\t\t\toperands[%v].mem.disp: 0x%x\n", i, uint64(op.Mem.Disp))
+				// ! without uint32
+				// want: mem.disp: 0xffffffa0
+				// got: mem.disp: 0xffffffffffffffa0
+				fmt.Fprintf(buf, "\t\t\toperands[%v].mem.disp: 0x%x\n", i, uint32(op.Mem.Disp))
 			}
 		case ARM64_OP_CIMM:
 			fmt.Fprintf(buf, "\t\toperands[%v].type: C-IMM = %v\n", i, op.Imm)
@@ -92,7 +95,12 @@ func arm64InsnDetail(insn Instruction, engine *Engine, buf *bytes.Buffer) {
 		fmt.Fprintf(buf, "\tUpdate-flags: True\n")
 	}
 	if insn.Arm64.Writeback {
-		fmt.Fprintf(buf, "\tWrite-back: True\n")
+		fmt.Fprintf(buf, "\tWrite-back: %s\n", func() string {
+			if insn.Arm64.PostIndex {
+				return "Post"
+			}
+			return "Pre"
+		}())
 	}
 	if insn.Arm64.CC != ARM64_CC_AL && insn.Arm64.CC != ARM64_CC_INVALID {
 		fmt.Fprintf(buf, "\tCode-condition: %v\n", insn.Arm64.CC)
@@ -167,12 +175,13 @@ func TestArm64(t *testing.T) {
 
 	}
 
-	spec, err := ioutil.ReadFile(spec_file)
+	spec, err := os.ReadFile(spec_file)
 	if err != nil {
 		t.Errorf("Cannot read spec file %v: %v", spec_file, err)
 	}
 	if fs := final.String(); string(spec) != fs {
-		// fmt.Println(fs)
+		// * Uncomment to debugging. Diff with arm64.SPEC
+		fmt.Println(fs)
 		t.Errorf("Output failed to match spec!")
 	} else {
 		t.Logf("Clean diff with %v.\n", spec_file)
