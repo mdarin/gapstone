@@ -311,7 +311,7 @@ func (e *Engine) InsnName(insn any) string {
 	if dietMode {
 		return ""
 	}
-	
+
 	var insnUint uint
 	switch v := any(insn).(type) {
 	case int:
@@ -337,7 +337,7 @@ func (e *Engine) InsnName(insn any) string {
 	default:
 		return ""
 	}
-	
+
 	return C.GoString(C.cs_insn_name(e.handle, C.uint(insnUint)))
 }
 
@@ -347,7 +347,7 @@ func (e *Engine) InsnName(insn any) string {
 // WARNING: Always returns "" if capstone built with CAPSTONE_DIET
 //
 // Parameters:
-//   - grp any  Group of instructions as any integer type 
+//   - grp any  Group of instructions as any integer type
 //
 // Returns:
 //   - string  Name of Group of instructions
@@ -355,7 +355,7 @@ func (e *Engine) GroupName(grp any) string {
 	if dietMode {
 		return ""
 	}
-	
+
 	var grpUint uint
 	switch v := any(grp).(type) {
 	case int:
@@ -381,7 +381,7 @@ func (e *Engine) GroupName(grp any) string {
 	default:
 		return ""
 	}
-	
+
 	return C.GoString(C.cs_group_name(e.handle, C.uint(grpUint)))
 }
 

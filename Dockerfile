@@ -35,7 +35,7 @@ RUN curl https://go.dev/dl/go1.23.8.linux-arm64.tar.gz -Lo ./go.linux-arm64.tar.
 ENV PATH="$PATH:/usr/local/go/bin"
 RUN go version
 
-# WORKDIR /build
+WORKDIR /build
 # # make sure thet we have unix line ending
 # RUN dos2unix ./gen*; \
 #     chmod +x ./gen*

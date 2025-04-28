@@ -16,6 +16,6 @@ capstone
 gapstone 
 *.tar.gz
 *.gz.asc
-# *.SPEC
+*.SPEC
+*.coffee
 *.pub
-*-got.SPEC
