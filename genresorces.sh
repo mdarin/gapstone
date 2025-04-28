@@ -131,12 +131,12 @@ For examples,try reading the *_test.go files.
 
     printf "//=== Found #define values in $input_file ===\n\n" >>"$resource_file"
     printf "var %sCodes = map[string]string{\n" "$resource_name" >>"$resource_file"
-    [ -s "$define_file" ] && cat "$define_file" >>"$resource_file" || echo "No #define found"
+    [ -s "$define_file" ] && cat "$define_file" >>"$resource_file" || echo -e "${GRAY}-${NC} Processing file: ${input_file} ${GRAY}No #define found${NC}"
     printf "}\n\n" >>"$resource_file"
 
     printf "//=== Found platform entries in $input_file ===\n\n" >>"$resource_file"
     printf "var %sPlatforms = []platform {\n" "$resource_name" >>"$resource_file"
-    [ -s "$platform_file" ] && cat "$platform_file" >>"$resource_file" || echo "No platform entries found"
+    [ -s "$platform_file" ] && cat "$platform_file" >>"$resource_file" || echo -e "${GRAY}-${NC} Processing file: ${input_file} ${GRAY}No platform entries found${NC}"
     printf "}\n\n" >>"$resource_file"
 
     echo -e "${GREEN}✓${NC} Processing file: $input_file -> $resource_file"
@@ -148,6 +148,110 @@ For examples,try reading the *_test.go files.
 # Извлечение #define
 extract_defines() {
     awk '
+    # функция:
+    # \xX → \xX0 (дополняет)
+    # \xXX → \xXX (оставляет как есть)
+    # Корректно обрабатывает смешанные последовательности
+    # Работает в любой версии mawk
+    #  Сохраняет все не-hex символы без изменений
+    function pad_hex(input,    output, i, len, char, state, hex_chars) {
+        output = ""
+        len = length(input)
+        state = 0  # 0=normal, 1=found backslash, 2=found x, 3=first hex digit
+        hex_chars = ""
+        
+        for (i = 1; i <= len; i++) {
+            char = substr(input, i, 1)
+            
+            if (state == 0 && char == "\\") {
+                state = 1
+                hex_chars = "\\"
+                continue
+            }
+            
+            if (state == 1) {
+                if (char == "x") {
+                    state = 2
+                    hex_chars = hex_chars "x"
+                } else {
+                    output = output hex_chars char
+                    state = 0
+                    hex_chars = ""
+                }
+                continue
+            }
+            
+            if (state == 2) {
+                if (char ~ /[0-9a-fA-F]/) {
+                    state = 3
+                    hex_chars = hex_chars char
+                } else {
+                    output = output hex_chars char
+                    state = 0
+                    hex_chars = ""
+                }
+                continue
+            }
+            
+            if (state == 3) {
+                if (char ~ /[0-9a-fA-F]/) {
+                    # Полная hex последовательность \xXX
+                    output = output hex_chars char
+                    state = 0
+                    hex_chars = ""
+                } else if (char == "\\") {
+                    # Началась новая последовательность - дополняем текущую
+                    output = output hex_chars "0"
+                    state = 1
+                    hex_chars = "\\"
+                } else {
+                    # Только один hex символ - дополняем нулём
+                    output = output hex_chars "0" char
+                    state = 0
+                    hex_chars = ""
+                }
+                continue
+            }
+            
+            # Обычный символ
+            output = output char
+        }
+        
+        # Обработка незавершённой последовательности в конце строки
+        if (state == 3) {
+            # Был только один hex символ - дополняем
+            output = output hex_chars "0"
+        }
+        else if (state > 0) {
+            # Незавершённая последовательность - добавляем как есть
+            output = output hex_chars
+        }
+        
+        return output
+    }
+
+    # проверка hex-формата
+    function is_hex_string(str,    parts, n, i) {
+        # Удаляем все пробелы и кавычки для проверки
+        clean_str = str
+        gsub(/[[:space:]"]/, "", clean_str)
+        
+        # Должна состоять ТОЛЬКО из \xXX последовательностей
+        if (clean_str ~ /^(\\x[0-9a-fA-F]{2})+$/) {
+            return 1
+        }
+        
+        # Дополнительная проверка каждой последовательности
+        n = split(clean_str, parts, /\\x/)
+        for (i = 2; i <= n; i++) {
+            if (length(parts[i]) != 2 || parts[i] !~ /[0-9a-fA-F]{2}/) {
+                return 1
+            }
+        }
+        
+        return 0
+    }
+    
     function join(strings, n) {
         result = ""
         for (i = 1; i <= n; i++) {
@@ -247,9 +351,12 @@ extract_defines() {
         gsub(/^[[:space:]]+|[[:space:]]+$/, "", define_value)
         gsub(/[[:space:]]+/, " ", define_value)  # Заменяем множественные пробелы на один
         gsub(/" "/, "", define_value) 
-        # Выводим результат в одну строку
-        print "//"  define_name "=" define_value
-        printf("\"%s\":%s,\n", define_name, define_value)
+        # Строгая проверка - должны быть только hex-последовательности с пробелами
+        if (is_hex_string(define_value)) {
+            # Выводим результат в одну строку
+            print "//"  define_name "=" define_value
+            printf("\"%s\":%s,\n", define_name, pad_hex(define_value))
+        }
         in_define = 0
         define_name = ""
         define_value = ""
@@ -270,9 +377,13 @@ extract_defines() {
         # Нормализуем пробелы
         gsub(/[[:space:]]+/, " ", value)
         gsub(/^[[:space:]]+|[[:space:]]+$/, "", value)
-        # Выводим в формате имя=значение
-        print "//" name "=" value
-        printf("\"%s\":%s,\n", name, value)
+        # Строгая проверка - должны быть только hex-последовательности с пробелами
+        if (is_hex_string(value)) {
+            # Выводим в формате имя=значение
+            value1 = pad_hex(value)
+            print "//" name "=" value1
+            printf("\"%s\":%s,\n", name, value1)
+        }
     }
     ' "$1" >"$2"
 }

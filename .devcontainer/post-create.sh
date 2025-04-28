@@ -24,4 +24,6 @@ mkdir -p $HOME/.local/bin
 create_aider >$HOME/.local/bin/aider-ide
 chmod a+x $HOME/.local/bin/aider-ide
 
+sudo apt update && sudo apt install -y file
+
 go install golang.org/x/tools/cmd/godoc@latest

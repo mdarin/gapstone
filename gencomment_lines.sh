@@ -35,7 +35,7 @@ perform_sed() {
     # 1. \b - граница слова (или [^[:alnum:]_] для POSIX)
     # 2. Точное совпадение pattern
     # 3. Проверка, что после нет букв/цифр/подчеркивания
-    strict_pattern="(^[[:space:]]*($PATTERNS)[[:space:]][^[[:space:]]]*)"
+    strict_pattern="(^[[:space:]]*($PATTERNS))"
 
     if sed -E "s@${strict_pattern}@${comment}\1@" "$file" >"$temp_file" 2>/dev/null; then
         if ! cmp -s "$file" "$temp_file"; then
@@ -66,6 +66,8 @@ while IFS= read -r line; do
     [[ ! "$pattern" =~ [^[:space:]] ]] && continue
     [ -z "$PATTERNS" ] && PATTERNS="$pattern" || PATTERNS+="|$pattern"
 done < <(go test ./... 2>&1)
+
+if [-e "$DIR" ] 
 
 echo "Поиск в: $DIR"
 echo "Шаблоны: $PATTERNS"

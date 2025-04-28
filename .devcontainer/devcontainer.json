@@ -26,7 +26,11 @@
 				"IgorSbitnev.error-gutters",
 				"ms-vscode.cpptools-extension-pack",
 				"ms-python.python",
-				"huyang.go-doc-comments"
+				"huyang.go-doc-comments",
+				"oderwat.indent-rainbow",
+				"RobertOstermann.inline-parameters-extended",
+				"fnando.linter",
+				"ohanedan.lowlight-go-errors"
 			]
 		}
 	}
