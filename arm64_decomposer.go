@@ -141,10 +141,13 @@ func fillArm64Header(raw C.cs_insn, insn *Instruction) {
 		// fake a union by setting only the correct struct member
 		case ARM64_OP_IMM, ARM64_OP_CIMM:
 			gop.Imm = int64(*(*C.int64_t)(unsafe.Pointer(&cop.anon0[0])))
+
 		case ARM64_OP_FP:
 			gop.FP = float64(*(*C.double)(unsafe.Pointer(&cop.anon0[0])))
+
 		case ARM64_OP_REG, ARM64_OP_REG_MRS, ARM64_OP_REG_MSR:
 			gop.Reg = uint(*(*C.uint)(unsafe.Pointer(&cop.anon0[0])))
+
 		case ARM64_OP_MEM:
 			cmop := (*C.arm64_op_mem)(unsafe.Pointer(&cop.anon0[0]))
 			gop.Mem = Arm64MemoryOperand{
@@ -152,12 +155,24 @@ func fillArm64Header(raw C.cs_insn, insn *Instruction) {
 				Index: uint(cmop.index),
 				Disp:  int32(cmop.disp),
 			}
+
+		case ARM64_OP_SME_INDEX:
+			cmop := (*C.arm64_op_sme_index)(unsafe.Pointer(&cop.anon0[0]))
+			gop.SMEIndex = Arm64OperandSMEIndex{
+				Base: uint(cmop.base),
+				Reg:  uint(cmop.reg),
+				Disp: int32(cmop.disp),
+			}
+
 		case ARM64_OP_PREFETCH:
 			gop.Prefetch = int(*(*C.int)(unsafe.Pointer(&cop.anon0[0])))
+
 		case ARM64_OP_PSTATE:
 			gop.PState = int(*(*C.int)(unsafe.Pointer(&cop.anon0[0])))
+
 		case ARM64_OP_BARRIER:
 			gop.Barrier = int(*(*C.int)(unsafe.Pointer(&cop.anon0[0])))
+
 		case ARM64_OP_SYS:
 			gop.Sys = uint(*(*C.uint)(unsafe.Pointer(&cop.anon0[0])))
 		}

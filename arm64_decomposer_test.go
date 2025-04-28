@@ -27,10 +27,13 @@ func arm64InsnDetail(insn Instruction, engine *Engine, buf *bytes.Buffer) {
 		switch op.Type {
 		case ARM64_OP_REG:
 			fmt.Fprintf(buf, "\t\toperands[%v].type: REG = %v\n", i, engine.RegName(op.Reg))
+
 		case ARM64_OP_IMM:
 			fmt.Fprintf(buf, "\t\toperands[%v].type: IMM = 0x%x\n", i, op.Imm)
+
 		case ARM64_OP_FP:
 			fmt.Fprintf(buf, "\t\toperands[%v].type: FP = %f\n", i, op.FP)
+
 		case ARM64_OP_MEM:
 			fmt.Fprintf(buf, "\t\toperands[%v].type: MEM\n", i)
 			if op.Mem.Base != ARM64_REG_INVALID {
@@ -47,18 +50,42 @@ func arm64InsnDetail(insn Instruction, engine *Engine, buf *bytes.Buffer) {
 				// got: mem.disp: 0xffffffffffffffa0
 				fmt.Fprintf(buf, "\t\t\toperands[%v].mem.disp: 0x%x\n", i, uint32(op.Mem.Disp))
 			}
+
+		case ARM64_OP_SME_INDEX: // WARN: Not tested yet!
+			// TODO: actualize
+			if op.Mem.Base != ARM64_REG_INVALID {
+				fmt.Fprintf(buf, "\t\t\toperands[%v].sme.base: REG = %s\n",
+					i, engine.RegName(op.SMEIndex.Base))
+			}
+			if op.Mem.Index != ARM64_REG_INVALID {
+				fmt.Fprintf(buf, "\t\t\toperands[%v].sme.reg: REG = %s\n",
+					i, engine.RegName(op.SMEIndex.Reg))
+			}
+			if op.Mem.Disp != 0 {
+				// ! without uint32
+				// want: mem.disp: 0xffffffa0
+				// got: mem.disp: 0xffffffffffffffa0
+				fmt.Fprintf(buf, "\t\t\toperands[%v].sme.disp: 0x%x\n", i, uint32(op.SMEIndex.Disp))
+			}
+
 		case ARM64_OP_CIMM:
 			fmt.Fprintf(buf, "\t\toperands[%v].type: C-IMM = %v\n", i, op.Imm)
+
 		case ARM64_OP_REG_MRS:
 			fmt.Fprintf(buf, "\t\toperands[%v].type: REG_MRS = 0x%x\n", i, op.Reg)
+
 		case ARM64_OP_REG_MSR:
 			fmt.Fprintf(buf, "\t\toperands[%v].type: REG_MSR = 0x%x\n", i, op.Reg)
+
 		case ARM64_OP_PSTATE:
 			fmt.Fprintf(buf, "\t\toperands[%v].type: PSTATE = 0x%x\n", i, op.PState)
+
 		case ARM64_OP_SYS:
 			fmt.Fprintf(buf, "\t\toperands[%v].type: SYS = 0x%x\n", i, op.Sys)
+
 		case ARM64_OP_PREFETCH:
 			fmt.Fprintf(buf, "\t\toperands[%v].type: PREFETCH = 0x%x\n", i, op.Prefetch)
+
 		case ARM64_OP_BARRIER:
 			fmt.Fprintf(buf, "\t\toperands[%v].type: BARRIER = 0x%x\n", i, op.Barrier)
 		}
@@ -66,8 +93,10 @@ func arm64InsnDetail(insn Instruction, engine *Engine, buf *bytes.Buffer) {
 		switch op.Access {
 		case CS_AC_READ:
 			fmt.Fprintf(buf, "\t\toperands[%v].access: READ\n", i)
+
 		case CS_AC_WRITE:
 			fmt.Fprintf(buf, "\t\toperands[%v].access: WRITE\n", i)
+
 		case CS_AC_READ | CS_AC_WRITE:
 			fmt.Fprintf(buf, "\t\toperands[%v].access: READ | WRITE\n", i)
 		}
