@@ -40,9 +40,13 @@ func isSemanticallySignificant(r rune) bool {
 // CompareNormalized надежно сравнивает строки/байты после нормализации.
 //
 // Usage examples:
+//
 // CompareNormalized("hello\nworld", "hello world"))  // true
+//
 // CompareNormalized([]byte("go\tlang"), "golang"))   // true
+//
 // CompareNormalized(bytes.NewBufferString(" data "), "data") // true
+//
 // CompareNormalized("one", "two"))                   // false
 func CompareNormalized(a, b any) bool {
 	switch v1 := a.(type) {
@@ -92,13 +96,19 @@ func CompareNormalized(a, b any) bool {
 }
 
 // PrettyPrintHex форматирует число в hex с автоматическим выбором полного представления.
-// Примеры вывода
+//
+// Usage examples:
 //
 //	PrettyPrintHex(0xc)           -> 0xc
+//
 //	PrettyPrintHex(0x6)           -> 0x6
+//
 //	PrettyPrintHex(0xfffffffffffffdd0) -> 0xfffffffffffffdd0
+//
 //	PrettyPrintHex(255)           -> 0xff
+//
 //	PrettyPrintHex(int64(-1))     -> 0xffffffffffffffff (полное представление)
+//
 //	PrettyPrintHex("test")      -> "test" (неподдерживаемый тип)
 func PrettyPrintHex(num any) string {
 	var n uint64
