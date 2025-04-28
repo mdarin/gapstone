@@ -139,32 +139,32 @@ Disasm:
 Platform: ARM-64
 Code: 0x09 0x00 0x38 0xd5 0xbf 0x40 0x00 0xd5 0x0c 0x05 0x13 0xd5 0x20 0x50 0x02 0x0e 0x20 0xe4 0x3d 0x0f 0x00 0x18 0xa0 0x5f 0xa2 0x00 0xae 0x9e 0x9f 0x37 0x03 0xd5 0xbf 0x33 0x03 0xd5 0xdf 0x3f 0x03 0xd5 0x21 0x7c 0x02 0x9b 0x21 0x7c 0x00 0x53 0x00 0x40 0x21 0x4b 0xe1 0x0b 0x40 0xb9 0x20 0x04 0x81 0xda 0x20 0x08 0x02 0x8b 0x10 0x5b 0xe8 0x3c 
 Disasm:
-0x1000:	mrs		x9, midr_el1 // insn-ID: 495, insn-mnem: mrs
+0x1000:	mrs		x9, midr_el1 // insn-ID: 662, insn-mnem: mrs
 	This instruction belongs to groups: privilege 
-0x1004:	msr		spsel, #0 // insn-ID: 497, insn-mnem: msr
+0x1004:	msr		spsel, #0 // insn-ID: 664, insn-mnem: msr
 	Implicit registers modified: nzcv 
 	This instruction belongs to groups: privilege 
-0x1008:	msr		dbgdtrtx_el0, x12 // insn-ID: 497, insn-mnem: msr
+0x1008:	msr		dbgdtrtx_el0, x12 // insn-ID: 664, insn-mnem: msr
 	This instruction belongs to groups: privilege 
-0x100c:	tbx		v0.8b, {v1.16b, v2.16b, v3.16b}, v2.8b // insn-ID: 835, insn-mnem: tbx
+0x100c:	tbx		v0.8b, {v1.16b, v2.16b, v3.16b}, v2.8b // insn-ID: 1120, insn-mnem: tbx
 	This instruction belongs to groups: neon 
-0x1010:	scvtf		v0.2s, v1.2s, #3 // insn-ID: 592, insn-mnem: scvtf
+0x1010:	scvtf		v0.2s, v1.2s, #3 // insn-ID: 785, insn-mnem: scvtf
 	This instruction belongs to groups: neon 
-0x1014:	fmla		s0, s0, v0.s[3] // insn-ID: 231, insn-mnem: fmla
+0x1014:	fmla		s0, s0, v0.s[3] // insn-ID: 366, insn-mnem: fmla
 	This instruction belongs to groups: neon 
-0x1018:	fmov		x2, v5.d[1] // insn-ID: 233, insn-mnem: fmov
+0x1018:	fmov		x2, v5.d[1] // insn-ID: 379, insn-mnem: fmov
 	This instruction belongs to groups: fparmv8 
-0x101c:	dsb		nsh // insn-ID: 156, insn-mnem: dsb
-0x1020:	dmb		osh // insn-ID: 154, insn-mnem: dmb
-0x1024:	isb		 // insn-ID: 276, insn-mnem: isb
-0x1028:	mul		x1, x1, x2 // insn-ID: 499, insn-mnem: mul
-0x102c:	lsr		w1, w1, #0 // insn-ID: 480, insn-mnem: lsr
-0x1030:	sub		w0, w0, w1, uxtw // insn-ID: 805, insn-mnem: sub
-0x1034:	ldr		w1, [sp, #8] // insn-ID: 393, insn-mnem: ldr
-0x1038:	cneg		x0, x1, ne // insn-ID: 119, insn-mnem: cneg
+0x101c:	dsb		nsh // insn-ID: 284, insn-mnem: dsb
+0x1020:	dmb		osh // insn-ID: 282, insn-mnem: dmb
+0x1024:	isb		 // insn-ID: 430, insn-mnem: isb
+0x1028:	mul		x1, x1, x2 // insn-ID: 666, insn-mnem: mul
+0x102c:	lsr		w1, w1, #0 // insn-ID: 645, insn-mnem: lsr
+0x1030:	sub		w0, w0, w1, uxtw // insn-ID: 1082, insn-mnem: sub
+0x1034:	ldr		w1, [sp, #8] // insn-ID: 558, insn-mnem: ldr
+0x1038:	cneg		x0, x1, ne // insn-ID: 149, insn-mnem: cneg
 	Implicit registers read: nzcv 
-0x103c:	add		x0, x1, x2, lsl #2 // insn-ID: 4, insn-mnem: add
-0x1040:	ldr		q16, [x24, w8, uxtw #4] // insn-ID: 393, insn-mnem: ldr
+0x103c:	add		x0, x1, x2, lsl #2 // insn-ID: 6, insn-mnem: add
+0x1040:	ldr		q16, [x24, w8, uxtw #4] // insn-ID: 558, insn-mnem: ldr
 
 ****************
 Platform: PPC-64
@@ -367,21 +367,25 @@ Disasm:
 0x1000:	lui		s0, 3 // insn-ID: 221, insn-mnem: lui
 0x1004:	auipc		t0, 8 // insn-ID: 79, insn-mnem: auipc
 0x1008:	jal		8 // insn-ID: 206, insn-mnem: jal
+	This instruction belongs to groups: call 
 0x100c:	jal		-0x10 // insn-ID: 206, insn-mnem: jal
+	This instruction belongs to groups: call 
 0x1010:	jalr		ra, a0, 4 // insn-ID: 207, insn-mnem: jalr
+	This instruction belongs to groups: call 
 0x1014:	jalr		ra, zero, -4 // insn-ID: 207, insn-mnem: jalr
+	This instruction belongs to groups: call 
 0x1018:	beq		sp, tp, 0xa // insn-ID: 80, insn-mnem: beq
-	This instruction belongs to groups: jump 
+	This instruction belongs to groups: branch_relative jump 
 0x101c:	bne		gp, t1, -6 // insn-ID: 85, insn-mnem: bne
-	This instruction belongs to groups: jump 
+	This instruction belongs to groups: branch_relative jump 
 0x1020:	blt		t2, s1, 0x14 // insn-ID: 83, insn-mnem: blt
-	This instruction belongs to groups: jump 
+	This instruction belongs to groups: branch_relative jump 
 0x1024:	bge		a0, a1, 6 // insn-ID: 81, insn-mnem: bge
-	This instruction belongs to groups: jump 
+	This instruction belongs to groups: branch_relative jump 
 0x1028:	bltu		a2, a3, 0xa // insn-ID: 84, insn-mnem: bltu
-	This instruction belongs to groups: jump 
+	This instruction belongs to groups: branch_relative jump 
 0x102c:	bgeu		a4, a5, 0xc // insn-ID: 82, insn-mnem: bgeu
-	This instruction belongs to groups: jump 
+	This instruction belongs to groups: branch_relative jump 
 0x1030:	lb		a6, 1(a7) // insn-ID: 208, insn-mnem: lb
 0x1034:	lh		s2, 4(s3) // insn-ID: 211, insn-mnem: lh
 0x1038:	lw		s4, 6(s5) // insn-ID: 222, insn-mnem: lw

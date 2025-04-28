@@ -9,7 +9,7 @@ For examples, try reading the *_test.go files.
 
     THIS FILE WAS AUTO-GENERATED -- DO NOT EDIT!
 	Command: ./genspec.rb capstone/tests/
-	Created at: 2025-04-17T13:46:52+00:00
+	Created at: 2025-04-25T09:00:46+00:00
 
 */
 
@@ -31,10 +31,12 @@ const (
 	Mos65xxSpec    = "mos65xx.SPEC"
 	PpcSpec        = "ppc.SPEC"
 	RiscvSpec      = "riscv.SPEC"
+	ShSpec         = "sh.SPEC"
 	SkipdataSpec   = "skipdata.SPEC"
 	SparcSpec      = "sparc.SPEC"
 	SystemzSpec    = "systemz.SPEC"
 	Tms320c64xSpec = "tms320c64x.SPEC"
+	TricoreSpec    = "tricore.SPEC"
 	WasmSpec       = "wasm.SPEC"
 	X86Spec        = "x86.SPEC"
 	XcoreSpec      = "xcore.SPEC"

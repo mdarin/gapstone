@@ -9,7 +9,7 @@ For examples,try reading the *_test.go files.
 
     THIS FILE WAS AUTO-GENERATED -- DO NOT EDIT!
     Command: ./genresorces.sh capstone/tests/test_mos65xx.c
-    Created at: 2025-04-17 13:06:57
+    Created at: 2025-04-25 12:56:14
 
 */
 
@@ -92,7 +92,3 @@ var mos65xxPlatforms = []platform{
 		},
 	},
 }
-
-// TODO:
-// 1 mos65xx_decomposer.go по аналогии arm64_decomposer.go
-// 2 mos65xx_decomposer_test.go по аналогии arm64_decomposer_test.go

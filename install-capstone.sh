@@ -20,7 +20,7 @@ if ((EUID != 0)); then
 fi
 
 # URL для загрузки
-CAPSTONE_VERSION="5.0-rc2" # TODO: chose version manualy here
+CAPSTONE_VERSION="5.0.6" # TODO: chose version manualy here
 CAPSTONE_URL="https://github.com/capstone-engine/capstone/releases/download/${CAPSTONE_VERSION}/capstone-${CAPSTONE_VERSION}.tar.xz"
 TEMP_DIR=$(mktemp -d)
 INSTALL_DIR="/usr/local"  # Стандартный каталог для установки библиотек # TODO: chose dir if needed here

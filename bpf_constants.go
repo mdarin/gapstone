@@ -9,7 +9,7 @@ For examples, try reading the *_test.go files.
 
     THIS FILE WAS AUTO-GENERATED -- DO NOT EDIT!
 	Command: ./genconst.rb capstone/bindings/python/capstone/
-	Created at: 2025-04-14T19:17:55+00:00
+	Created at: 2025-04-25T09:04:27+00:00
 
 */
 
@@ -118,6 +118,7 @@ const (
 	BPF_INS_JSGT    = C.BPF_INS_JSGT
 	BPF_INS_JSGE    = C.BPF_INS_JSGE
 	BPF_INS_CALL    = C.BPF_INS_CALL
+	BPF_INS_CALLX   = C.BPF_INS_CALLX
 	BPF_INS_EXIT    = C.BPF_INS_EXIT
 	BPF_INS_JLT     = C.BPF_INS_JLT
 	BPF_INS_JLE     = C.BPF_INS_JLE

@@ -15,64 +15,68 @@ Disasm:
 0x1008:	jal	8
 	op_count: 1
 		operands[0].type: IMM = 0x8
+	This instruction belongs to groups: call 
 
 0x100c:	jal	-0x10
 	op_count: 1
 		operands[0].type: IMM = 0xfffffffffffffff0
+	This instruction belongs to groups: call 
 
 0x1010:	jalr	ra, a0, 4
 	op_count: 3
 		operands[0].type: REG = ra
 		operands[1].type: REG = a0
 		operands[2].type: IMM = 0x4
+	This instruction belongs to groups: call 
 
 0x1014:	jalr	ra, zero, -4
 	op_count: 3
 		operands[0].type: REG = ra
 		operands[1].type: REG = zero
 		operands[2].type: IMM = 0xfffffffffffffffc
+	This instruction belongs to groups: call 
 
 0x1018:	beq	sp, tp, 0xa
 	op_count: 3
 		operands[0].type: REG = sp
 		operands[1].type: REG = tp
 		operands[2].type: IMM = 0xa
-	This instruction belongs to groups: jump 
+	This instruction belongs to groups: branch_relative jump 
 
 0x101c:	bne	gp, t1, -6
 	op_count: 3
 		operands[0].type: REG = gp
 		operands[1].type: REG = t1
 		operands[2].type: IMM = 0xfffffffffffffffa
-	This instruction belongs to groups: jump 
+	This instruction belongs to groups: branch_relative jump 
 
 0x1020:	blt	t2, s1, 0x14
 	op_count: 3
 		operands[0].type: REG = t2
 		operands[1].type: REG = s1
 		operands[2].type: IMM = 0x14
-	This instruction belongs to groups: jump 
+	This instruction belongs to groups: branch_relative jump 
 
 0x1024:	bge	a0, a1, 6
 	op_count: 3
 		operands[0].type: REG = a0
 		operands[1].type: REG = a1
 		operands[2].type: IMM = 0x6
-	This instruction belongs to groups: jump 
+	This instruction belongs to groups: branch_relative jump 
 
 0x1028:	bltu	a2, a3, 0xa
 	op_count: 3
 		operands[0].type: REG = a2
 		operands[1].type: REG = a3
 		operands[2].type: IMM = 0xa
-	This instruction belongs to groups: jump 
+	This instruction belongs to groups: branch_relative jump 
 
 0x102c:	bgeu	a4, a5, 0xc
 	op_count: 3
 		operands[0].type: REG = a4
 		operands[1].type: REG = a5
 		operands[2].type: IMM = 0xc
-	This instruction belongs to groups: jump 
+	This instruction belongs to groups: branch_relative jump 
 
 0x1030:	lb	a6, 1(a7)
 	op_count: 2

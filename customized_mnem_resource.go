@@ -9,7 +9,7 @@ For examples,try reading the *_test.go files.
 
     THIS FILE WAS AUTO-GENERATED -- DO NOT EDIT!
     Command: ./genresorces.sh capstone/tests/test_customized_mnem.c
-    Created at: 2025-04-17 13:06:57
+    Created at: 2025-04-25 12:56:14
 
 */
 

@@ -9,7 +9,7 @@ For examples,try reading the *_test.go files.
 
     THIS FILE WAS AUTO-GENERATED -- DO NOT EDIT!
     Command: ./genresorces.sh capstone/tests/test_skipdata.c
-    Created at: 2025-04-17 13:06:58
+    Created at: 2025-04-25 12:56:14
 
 */
 
@@ -58,8 +58,8 @@ var skipdataPlatforms = []platform{
 		comment: "X86 32 (Intel syntax) - Skip data with custom mnemonic",
 		options: []option{
 			{CS_OPT_DETAIL, CS_OPT_ON},
-			// {CS_OPT_INVALID, CS_OPT_OFF},
-			// {CS_OPT_SKIPDATA_SETUP, &skipdata},
+			{CS_OPT_INVALID, CS_OPT_OFF},
+			{CS_OPT_SKIPDATA_SETUP, CS_OPT_ON},
 		},
 	},
 	{
@@ -93,8 +93,8 @@ var skipdataPlatforms = []platform{
 		comment: "Arm - Skip data with callback",
 		options: []option{
 			{CS_OPT_DETAIL, CS_OPT_ON},
-			// {CS_OPT_INVALID, CS_OPT_OFF},
-			// {CS_OPT_SKIPDATA_SETUP, &skipdata_callback},
+			{CS_OPT_INVALID, CS_OPT_OFF},
+			{CS_OPT_SKIPDATA_SETUP, CS_OPT_ON},
 		},
 	},
 }

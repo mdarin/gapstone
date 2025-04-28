@@ -9,7 +9,7 @@ For examples,try reading the *_test.go files.
 
     THIS FILE WAS AUTO-GENERATED -- DO NOT EDIT!
     Command: ./genresorces.sh capstone/tests/test_iter.c
-    Created at: 2025-04-17 13:06:58
+    Created at: 2025-04-25 12:56:14
 
 */
 
@@ -58,6 +58,8 @@ var iterCodes = map[string]string{
 	"RISCV_CODE32": "\x37\x34\x00\x00\x97\x82\x00\x00\xef\x00\x80\x00\xef\xf0\x1f\xff\xe7\x00\x45\x00\xe7\x00\xc0\xff\x63\x05\x41\x00\xe3\x9d\x61\xfe\x63\xca\x93\x00\x63\x53\xb5\x00\x63\x65\xd6\x00\x63\x76\xf7\x00\x03\x88\x18\x00\x03\x99\x49\x00\x03\xaa\x6a\x00\x03\xcb\x2b\x01\x03\xdc\x8c\x01\x23\x86\xad\x03\x23\x9a\xce\x03\x23\x8f\xef\x01\x93\x00\xe0\x00\x13\xa1\x01\x01\x13\xb2\x02\x7d\x13\xc3\x03\xdd\x13\xe4\xc4\x12\x13\xf5\x85\x0c\x13\x96\xe6\x01\x13\xd7\x97\x01\x13\xd8\xf8\x40\x33\x89\x49\x01\xb3\x0a\x7b\x41\x33\xac\xac\x01\xb3\x3d\xde\x01\x33\xd2\x62\x40\xb3\x43\x94\x00\x33\xe5\xc5\x00\xb3\x76\xf7\x00\xb3\x54\x39\x01\xb3\x50\x31\x00\x33\x9f\x0f\x00",
 	// RISCV_CODE64="\x13\x04\xa8\x7a"
 	"RISCV_CODE64": "\x13\x04\xa8\x7a",
+	// TRICORE_CODE="\x16\x01\x20\x01\x1d\x00\x02\x00\x8f\x70\x00\x11\x40\xae\x89\xee\x04\x09\x42\xf2\xe2\xf2\xc2\x11\x19\xff\xc0\x70\x19\xff\x20\x10"
+	"TRICORE_CODE": "\x16\x01\x20\x01\x1d\x00\x02\x00\x8f\x70\x00\x11\x40\xae\x89\xee\x04\x09\x42\xf2\xe2\xf2\xc2\x11\x19\xff\xc0\x70\x19\xff\x20\x10",
 }
 
 //=== Found platform entries in capstone/tests/test_iter.c ===
@@ -65,7 +67,7 @@ var iterCodes = map[string]string{
 var iterPlatforms = []platform{
 	{
 		// -------------------------------------------
-		// Platform Entry (line 80):
+		// Platform Entry (line 84):
 		// Architecture: CS_ARCH_X86
 		// Mode: CS_MODE_16
 		// Code: X86_CODE16
@@ -80,7 +82,7 @@ var iterPlatforms = []platform{
 	},
 	{
 		// -------------------------------------------
-		// Platform Entry (line 87):
+		// Platform Entry (line 91):
 		// Architecture: CS_ARCH_X86
 		// Mode: CS_MODE_32
 		// Code: X86_CODE32
@@ -98,7 +100,7 @@ var iterPlatforms = []platform{
 	},
 	{
 		// -------------------------------------------
-		// Platform Entry (line 96):
+		// Platform Entry (line 100):
 		// Architecture: CS_ARCH_X86
 		// Mode: CS_MODE_32
 		// Code: X86_CODE32
@@ -113,7 +115,7 @@ var iterPlatforms = []platform{
 	},
 	{
 		// -------------------------------------------
-		// Platform Entry (line 103):
+		// Platform Entry (line 107):
 		// Architecture: CS_ARCH_X86
 		// Mode: CS_MODE_64
 		// Code: X86_CODE64
@@ -128,7 +130,7 @@ var iterPlatforms = []platform{
 	},
 	{
 		// -------------------------------------------
-		// Platform Entry (line 112):
+		// Platform Entry (line 116):
 		// Architecture: CS_ARCH_ARM
 		// Mode: CS_MODE_ARM
 		// Code: ARM_CODE
@@ -143,7 +145,7 @@ var iterPlatforms = []platform{
 	},
 	{
 		// -------------------------------------------
-		// Platform Entry (line 119):
+		// Platform Entry (line 123):
 		// Architecture: CS_ARCH_ARM
 		// Mode: CS_MODE_THUMB
 		// Code: THUMB_CODE2
@@ -158,7 +160,7 @@ var iterPlatforms = []platform{
 	},
 	{
 		// -------------------------------------------
-		// Platform Entry (line 126):
+		// Platform Entry (line 130):
 		// Architecture: CS_ARCH_ARM
 		// Mode: CS_MODE_ARM
 		// Code: ARM_CODE2
@@ -173,7 +175,7 @@ var iterPlatforms = []platform{
 	},
 	{
 		// -------------------------------------------
-		// Platform Entry (line 133):
+		// Platform Entry (line 137):
 		// Architecture: CS_ARCH_ARM
 		// Mode: CS_MODE_THUMB
 		// Code: THUMB_CODE
@@ -188,7 +190,7 @@ var iterPlatforms = []platform{
 	},
 	{
 		// -------------------------------------------
-		// Platform Entry (line 142):
+		// Platform Entry (line 146):
 		// Architecture: CS_ARCH_MIPS
 		// Mode: (CS_MODE_MIPS32 + CS_MODE_BIG_ENDIAN)
 		// Code: MIPS_CODE
@@ -203,7 +205,7 @@ var iterPlatforms = []platform{
 	},
 	{
 		// -------------------------------------------
-		// Platform Entry (line 149):
+		// Platform Entry (line 153):
 		// Architecture: CS_ARCH_MIPS
 		// Mode: (CS_MODE_MIPS64 + CS_MODE_LITTLE_ENDIAN)
 		// Code: MIPS_CODE2
@@ -218,7 +220,7 @@ var iterPlatforms = []platform{
 	},
 	{
 		// -------------------------------------------
-		// Platform Entry (line 158):
+		// Platform Entry (line 162):
 		// Architecture: CS_ARCH_ARM64
 		// Mode: CS_MODE_ARM
 		// Code: ARM64_CODE
@@ -233,7 +235,7 @@ var iterPlatforms = []platform{
 	},
 	{
 		// -------------------------------------------
-		// Platform Entry (line 167):
+		// Platform Entry (line 171):
 		// Architecture: CS_ARCH_PPC
 		// Mode: CS_MODE_BIG_ENDIAN
 		// Code: PPC_CODE
@@ -248,7 +250,7 @@ var iterPlatforms = []platform{
 	},
 	{
 		// -------------------------------------------
-		// Platform Entry (line 176):
+		// Platform Entry (line 180):
 		// Architecture: CS_ARCH_SPARC
 		// Mode: CS_MODE_BIG_ENDIAN
 		// Code: SPARC_CODE
@@ -263,7 +265,7 @@ var iterPlatforms = []platform{
 	},
 	{
 		// -------------------------------------------
-		// Platform Entry (line 183):
+		// Platform Entry (line 187):
 		// Architecture: CS_ARCH_SPARC
 		// Mode: (CS_MODE_BIG_ENDIAN + CS_MODE_V9)
 		// Code: SPARCV9_CODE
@@ -278,7 +280,7 @@ var iterPlatforms = []platform{
 	},
 	{
 		// -------------------------------------------
-		// Platform Entry (line 192):
+		// Platform Entry (line 196):
 		// Architecture: CS_ARCH_SYSZ
 		// Mode: 0
 		// Code: SYSZ_CODE
@@ -293,7 +295,7 @@ var iterPlatforms = []platform{
 	},
 	{
 		// -------------------------------------------
-		// Platform Entry (line 201):
+		// Platform Entry (line 205):
 		// Architecture: CS_ARCH_XCORE
 		// Mode: 0
 		// Code: XCORE_CODE
@@ -308,7 +310,7 @@ var iterPlatforms = []platform{
 	},
 	{
 		// -------------------------------------------
-		// Platform Entry (line 210):
+		// Platform Entry (line 214):
 		// Architecture: CS_ARCH_M680X
 		// Mode: CS_MODE_M680X_6809
 		// Code: M680X_CODE
@@ -323,7 +325,7 @@ var iterPlatforms = []platform{
 	},
 	{
 		// -------------------------------------------
-		// Platform Entry (line 219):
+		// Platform Entry (line 223):
 		// Architecture: CS_ARCH_MOS65XX
 		// Mode: CS_MODE_LITTLE_ENDIAN
 		// Code: MOS65XX_CODE
@@ -338,7 +340,7 @@ var iterPlatforms = []platform{
 	},
 	{
 		// -------------------------------------------
-		// Platform Entry (line 228):
+		// Platform Entry (line 232):
 		// Architecture: CS_ARCH_BPF
 		// Mode: CS_MODE_LITTLE_ENDIAN | CS_MODE_BPF_EXTENDED
 		// Code: EBPF_CODE
@@ -353,7 +355,7 @@ var iterPlatforms = []platform{
 	},
 	{
 		// -------------------------------------------
-		// Platform Entry (line 237):
+		// Platform Entry (line 241):
 		// Architecture: CS_ARCH_RISCV
 		// Mode: CS_MODE_RISCV32
 		// Code: RISCV_CODE32
@@ -368,7 +370,7 @@ var iterPlatforms = []platform{
 	},
 	{
 		// -------------------------------------------
-		// Platform Entry (line 244):
+		// Platform Entry (line 248):
 		// Architecture: CS_ARCH_RISCV
 		// Mode: CS_MODE_RISCV64
 		// Code: RISCV_CODE64
@@ -377,6 +379,21 @@ var iterPlatforms = []platform{
 		mode:    CS_MODE_RISCV64,
 		code:    iterCodes["RISCV_CODE64"],
 		comment: "RISCV64",
+		options: []option{
+			{CS_OPT_DETAIL, CS_OPT_ON},
+		},
+	},
+	{
+		// -------------------------------------------
+		// Platform Entry (line 257):
+		// Architecture: CS_ARCH_TRICORE
+		// Mode: CS_MODE_TRICORE_162
+		// Code: TRICORE_CODE
+		// Comment: "TriCore"
+		arch:    CS_ARCH_TRICORE,
+		mode:    CS_MODE_TRICORE_162,
+		code:    iterCodes["TRICORE_CODE"],
+		comment: "TriCore",
 		options: []option{
 			{CS_OPT_DETAIL, CS_OPT_ON},
 		},

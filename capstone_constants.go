@@ -9,7 +9,7 @@ For examples, try reading the *_test.go files.
 
     THIS FILE WAS AUTO-GENERATED -- DO NOT EDIT!
 	Command: ./genconst.rb capstone/bindings/python/capstone/
-	Created at: 2025-04-14T19:17:55+00:00
+	Created at: 2025-04-25T09:04:27+00:00
 
 */
 
@@ -55,6 +55,8 @@ const (
 	CS_ARCH_WASM       = C.CS_ARCH_WASM
 	CS_ARCH_BPF        = C.CS_ARCH_BPF
 	CS_ARCH_RISCV      = C.CS_ARCH_RISCV
+	CS_ARCH_SH         = C.CS_ARCH_SH
+	CS_ARCH_TRICORE    = C.CS_ARCH_TRICORE
 	CS_ARCH_MAX        = C.CS_ARCH_MAX
 	CS_ARCH_ALL        = C.CS_ARCH_ALL
 )
@@ -77,6 +79,7 @@ const (
 	CS_MODE_QPX                   = C.CS_MODE_QPX
 	CS_MODE_SPE                   = C.CS_MODE_SPE
 	CS_MODE_BOOKE                 = C.CS_MODE_BOOKE
+	CS_MODE_PS                    = C.CS_MODE_PS
 	CS_MODE_M68K_000              = C.CS_MODE_M68K_000
 	CS_MODE_M68K_010              = C.CS_MODE_M68K_010
 	CS_MODE_M68K_020              = C.CS_MODE_M68K_020
@@ -108,18 +111,34 @@ const (
 	CS_MODE_MOS65XX_65816_LONG_M  = C.CS_MODE_MOS65XX_65816_LONG_M
 	CS_MODE_MOS65XX_65816_LONG_X  = C.CS_MODE_MOS65XX_65816_LONG_X
 	CS_MODE_MOS65XX_65816_LONG_MX = C.CS_MODE_MOS65XX_65816_LONG_MX
+	CS_MODE_SH2                   = C.CS_MODE_SH2
+	CS_MODE_SH2A                  = C.CS_MODE_SH2A
+	CS_MODE_SH3                   = C.CS_MODE_SH3
+	CS_MODE_SH4                   = C.CS_MODE_SH4
+	CS_MODE_SH4A                  = C.CS_MODE_SH4A
+	CS_MODE_SHFPU                 = C.CS_MODE_SHFPU
+	CS_MODE_SHDSP                 = C.CS_MODE_SHDSP
+	CS_MODE_TRICORE_110           = C.CS_MODE_TRICORE_110
+	CS_MODE_TRICORE_120           = C.CS_MODE_TRICORE_120
+	CS_MODE_TRICORE_130           = C.CS_MODE_TRICORE_130
+	CS_MODE_TRICORE_131           = C.CS_MODE_TRICORE_131
+	CS_MODE_TRICORE_160           = C.CS_MODE_TRICORE_160
+	CS_MODE_TRICORE_161           = C.CS_MODE_TRICORE_161
+	CS_MODE_TRICORE_162           = C.CS_MODE_TRICORE_162
 )
 
 // Capstone option type
 const (
-	CS_OPT_SYNTAX         = C.CS_OPT_SYNTAX
-	CS_OPT_DETAIL         = C.CS_OPT_DETAIL
-	CS_OPT_MODE           = C.CS_OPT_MODE
-	CS_OPT_MEM            = C.CS_OPT_MEM
-	CS_OPT_SKIPDATA       = C.CS_OPT_SKIPDATA
-	CS_OPT_SKIPDATA_SETUP = C.CS_OPT_SKIPDATA_SETUP
-	CS_OPT_MNEMONIC       = C.CS_OPT_MNEMONIC
-	CS_OPT_UNSIGNED       = C.CS_OPT_UNSIGNED
+	CS_OPT_INVALID          = C.CS_OPT_INVALID
+	CS_OPT_SYNTAX           = C.CS_OPT_SYNTAX
+	CS_OPT_DETAIL           = C.CS_OPT_DETAIL
+	CS_OPT_MODE             = C.CS_OPT_MODE
+	CS_OPT_MEM              = C.CS_OPT_MEM
+	CS_OPT_SKIPDATA         = C.CS_OPT_SKIPDATA
+	CS_OPT_SKIPDATA_SETUP   = C.CS_OPT_SKIPDATA_SETUP
+	CS_OPT_MNEMONIC         = C.CS_OPT_MNEMONIC
+	CS_OPT_UNSIGNED         = C.CS_OPT_UNSIGNED
+	CS_OPT_NO_BRANCH_OFFSET = C.CS_OPT_NO_BRANCH_OFFSET
 )
 
 // Capstone option value
@@ -139,13 +158,14 @@ const (
 
 // Common instruction groups - to be consistent across all architectures.
 const (
-	CS_GRP_INVALID   = C.CS_GRP_INVALID
-	CS_GRP_JUMP      = C.CS_GRP_JUMP
-	CS_GRP_CALL      = C.CS_GRP_CALL
-	CS_GRP_RET       = C.CS_GRP_RET
-	CS_GRP_INT       = C.CS_GRP_INT
-	CS_GRP_IRET      = C.CS_GRP_IRET
-	CS_GRP_PRIVILEGE = C.CS_GRP_PRIVILEGE
+	CS_GRP_INVALID         = C.CS_GRP_INVALID
+	CS_GRP_JUMP            = C.CS_GRP_JUMP
+	CS_GRP_CALL            = C.CS_GRP_CALL
+	CS_GRP_RET             = C.CS_GRP_RET
+	CS_GRP_INT             = C.CS_GRP_INT
+	CS_GRP_IRET            = C.CS_GRP_IRET
+	CS_GRP_PRIVILEGE       = C.CS_GRP_PRIVILEGE
+	CS_GRP_BRANCH_RELATIVE = C.CS_GRP_BRANCH_RELATIVE
 )
 
 // Access types for instruction operands.
@@ -203,7 +223,7 @@ const (
 
 // Loading attempts, in order
 // - user-provided environment variable
-// - pkg_resources can get us the path to the local libraries
+// - importlib.resources can get us the path to the local libraries
 // - we can get the path to the local libraries by parsing our filename
 // - global load
 // - python's lib directory

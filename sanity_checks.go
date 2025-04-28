@@ -9,13 +9,13 @@ For examples,try reading the *_test.go files.
 
     THIS FILE WAS AUTO-GENERATED -- DO NOT EDIT!
     Command: ./gensanity.py
-    Created at: 2025-04-19 08:40:30
+    Created at: 2025-04-25 09:07:33
 
 */
 
 package gapstone
 
-// !WARN
+// WARN
 // Maintain the expected version and sanity checks manually, so we can verify
 // against the installed C lib. Not foolproof, but should save 90% of accidents
 const expectedMaj = 5
@@ -32,7 +32,7 @@ type sanityChecks map[int]sanityCheck
 func (s *sanityChecks) Maj() int { return expectedMaj }
 func (s *sanityChecks) Min() int { return expectedMin }
 
-// !WARN
+// WARN
 // Remember the all the constants CONST are direct refs to C.CONST, so in
 // combination with these we should be _fairly_ sure we're getting the
 // disassembly capstone expects to provide.
@@ -83,6 +83,11 @@ var checks = sanityChecks{
 		insMax: RISCV_INS_ENDING,
 		grpMax: RISCV_GRP_ENDING,
 	},
+	CS_ARCH_SH: sanityCheck{
+		regMax: SH_REG_ENDING,
+		insMax: SH_INS_ENDING,
+		grpMax: SH_GRP_ENDING,
+	},
 	CS_ARCH_SPARC: sanityCheck{
 		regMax: SPARC_REG_ENDING,
 		insMax: SPARC_INS_ENDING,
@@ -97,6 +102,11 @@ var checks = sanityChecks{
 		regMax: TMS320C64X_REG_ENDING,
 		insMax: TMS320C64X_INS_ENDING,
 		grpMax: TMS320C64X_GRP_ENDING,
+	},
+	CS_ARCH_TRICORE: sanityCheck{
+		regMax: TRICORE_REG_ENDING,
+		insMax: TRICORE_INS_ENDING,
+		grpMax: TRICORE_GRP_ENDING,
 	},
 	CS_ARCH_X86: sanityCheck{
 		regMax: X86_REG_ENDING,

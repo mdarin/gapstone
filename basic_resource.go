@@ -9,7 +9,7 @@ For examples,try reading the *_test.go files.
 
     THIS FILE WAS AUTO-GENERATED -- DO NOT EDIT!
     Command: ./genresorces.sh capstone/tests/test_basic.c
-    Created at: 2025-04-17 13:06:57
+    Created at: 2025-04-25 12:56:14
 
 */
 
@@ -357,7 +357,7 @@ var basicPlatforms = []platform{
 		comment: "PPC-64",
 		options: []option{
 			{CS_OPT_DETAIL, CS_OPT_ON},
-			{CS_OPT_SYNTAX, CS_OPT_SYNTAX_NOREGNAME},
+			{CS_OPT_SYNTAX, CS_OPT_ON},
 		},
 	},
 	{

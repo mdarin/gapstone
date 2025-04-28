@@ -399,7 +399,7 @@ Disasm:
 
 0x80001014:	msr	cpsr_fc, r6
 	op_count: 2
-		operands[0].type: SYSREG = 9
+		operands[0].type: SYSREG = 144
 		operands[1].type: REG = r6
 		operands[1].access: READ
 	Registers read: r6

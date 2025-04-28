@@ -9,7 +9,7 @@ For examples, try reading the *_test.go files.
 
     THIS FILE WAS AUTO-GENERATED -- DO NOT EDIT!
 	Command: ./genconst.rb capstone/bindings/python/capstone/
-	Created at: 2025-04-14T19:17:55+00:00
+	Created at: 2025-04-25T09:04:27+00:00
 
 */
 
