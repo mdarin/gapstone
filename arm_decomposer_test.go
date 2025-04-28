@@ -151,33 +151,7 @@ func armInsnDetail(insn Instruction, engine *Engine, buf *bytes.Buffer) {
 	fmt.Fprintf(buf, "\n")
 }
 
-// FIXME: Thumb-2 & register named with numbers
-// want
-// 0x8000101c:	sxtb.w	r6, r9, ror #8
-//
-//	op_count: 2
-//		operands[0].type: REG = r6
-//		operands[0].access: WRITE
-//		operands[1].type: REG = r9 <---
-//		operands[1].access: READ
-//			Shift: 4 = 8
-//	Registers read: r9
-//	Registers modified: r6
-//
-// got
-// 0x8000101c:     sxtb.w  r6, sb, ror #8
-//
-//	op_count: 2
-//	        operands[0].type: REG = r6
-//	        operands[0].access: WRITE
-//	        operands[1].type: REG = sb <---
-//	        operands[1].access: READ
-//	                Shift: 4 = 8
-//	Registers read: sb
-//	Registers modified: r6
 func TestArm(t *testing.T) {
-
-	// FIXME: Thumb 2 is not good decomposed.
 
 	t.Parallel()
 
@@ -236,7 +210,7 @@ func TestArm(t *testing.T) {
 	isSimilar := normalize.AreStringsSimilar(string(spec), final.String(), similarityThreshold)
 	t.Logf("String similariti Levenstein distance: %f isSimilar: %t", similarityThreshold, isSimilar)
 
-	if !isSimilar {
+	if CompareNormalized(final, spec) {
 		// * Uncomment for Debugging. Diff output with arm.SPEC
 		// fmt.Println(final.String())
 		t.Errorf("Output failed to match spec!")
